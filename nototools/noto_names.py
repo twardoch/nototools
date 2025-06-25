@@ -42,16 +42,12 @@ import argparse
 import collections
 import datetime
 import glob
-from os import path
 import re
 import sys
-
-from nototools import cldr_data
-from nototools import noto_fonts
-from nototools import tool_utils
-from nototools import unicode_data
-
+from os import path
 from xml.etree import ElementTree as ET
+
+from nototools import cldr_data, noto_fonts, tool_utils, unicode_data
 
 # Standard values used in Noto fonts.
 
@@ -63,8 +59,8 @@ ORIGINAL_FAMILY_LIMIT = 32
 GOOGLE_COPYRIGHT_RE = r"^Copyright 20\d\d Google (Inc|LLC)\.* All Rights Reserved\.$"
 
 ADOBE_COPYRIGHT_RE = (
-    "^Copyright \u00a9 2014(?:, 20\d\d)? Adobe Systems Incorporated "
-    "\(http://www.adobe.com/\)\.$"
+    "^Copyright \u00a9 2014(?:, 20\\d\\d)? Adobe Systems Incorporated "
+    r"\(http://www.adobe.com/\)\.$"
 )
 
 NOTO_URL = "http://www.google.com/get/noto/"
@@ -401,7 +397,7 @@ def _original_names(
         *_original_parts(
             preferred_family, preferred_subfamily, no_style_linking=no_style_linking
         ),
-        family_name_style=family_name_style
+        family_name_style=family_name_style,
     )
 
 
@@ -425,7 +421,7 @@ def _full_name(preferred_family, preferred_subfamily, include_regular):
 def _postscript_name(preferred_family, preferred_subfamily, include_regular):
     wws_family, wws_subfamily = _wws_parts(preferred_family, preferred_subfamily)
     # fix for names with punctuation
-    punct_re = re.compile("[\s'-]")
+    punct_re = re.compile(r"[\s'-]")
     result = "".join(punct_re.sub("", p) for p in wws_family)
     tail = [n for n in wws_subfamily if n not in wws_family]
     if tail:
@@ -471,7 +467,7 @@ def _version_re(noto_font, phase):
 
 
 def _trademark(noto_font):
-    return "^%s is a trademark of Google (Inc|LLC)\.*$" % noto_font.family
+    return r"^%s is a trademark of Google (Inc|LLC)\.*$" % noto_font.family
 
 
 def _manufacturer(noto_font):
@@ -650,7 +646,7 @@ def _description_re(noto_font, phase):
             # descriptions, but they probably should.
             # TODO(dougfelt): swat them to fix this.
             return "-"
-    return "^%s%s$" % (hint_prefix, designer)
+    return f"^{hint_prefix}{designer}$"
 
 
 def _license_text(noto_font):
@@ -952,7 +948,7 @@ def _create_family_to_faces(notofonts, name_fn):
 
 def _dump_family_to_faces(family_to_faces):
     for family in sorted(family_to_faces):
-        print("%s:\n  %s" % (family, "\n  ".join(sorted(family_to_faces[family]))))
+        print("{}:\n  {}".format(family, "\n  ".join(sorted(family_to_faces[family]))))
 
 
 def _dump_name_data(name_data):
@@ -1013,12 +1009,14 @@ def _info(fonts):
     family_to_subfamilies = _create_family_to_subfamilies(fonts)
     for family in sorted(family_to_subfamilies):
         print(
-            "%s:\n  %s" % (family, "\n  ".join(sorted(family_to_subfamilies[family])))
+            "{}:\n  {}".format(
+                family, "\n  ".join(sorted(family_to_subfamilies[family]))
+            )
         )
 
 
 def _read_filename_list(filenames):
-    with open(filenames, "r") as f:
+    with open(filenames) as f:
         return [n.strip() for n in f if n]
 
 
@@ -1090,7 +1088,7 @@ def main():
         "-f",
         "--files",
         metavar="fname",
-        help="fonts to examine, prefix with" "'@' to read list from file",
+        help="fonts to examine, prefix with'@' to read list from file",
         nargs="+",
     )
     parser.add_argument(

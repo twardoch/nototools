@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -29,8 +28,8 @@ lang_scripts (that have english names).
 
 import collections
 
-from nototools import cldr_data
-from nototools import unicode_data
+from nototools import cldr_data, unicode_data
+
 
 
 # controls printing of debug/trace information
@@ -76,7 +75,9 @@ def _create_lang_data():
             lang, script = lang_script.split("-")
             known_scripts.add(script)
             if lang == "und":
-                _log("used lang is und for script %s in region %s" % (script, region))
+                _log(
+                    f"used lang is und for script {script} in region {region}"
+                )
                 continue
             used_lang_scripts[lang].add(script)
             all_lang_scripts[lang].add(script)
@@ -99,7 +100,7 @@ def _create_lang_data():
         lang = cldr_data.get_likely_subtags("und-" + script)[0]
         if lang != "und":
             if script not in all_lang_scripts[lang]:
-                _log("adding likely lang %s for script %s" % (lang, script))
+                _log(f"adding likely lang {lang} for script {script}")
             all_lang_scripts[lang].add(script)
         elif script not in known_scripts:
             _log("adding script with unknown language %s" % script)
@@ -136,13 +137,11 @@ def _create_lang_data():
 
 def _langs_with_no_scripts(lang_script_data):
     """Return a set of langs with no scripts in lang_script_data."""
-    return set(
-        [
-            k
-            for k in lang_script_data
-            if not (lang_script_data[k][0] or lang_script_data[k][1])
-        ]
-    )
+    return {
+        k
+        for k in lang_script_data
+        if not (lang_script_data[k][0] or lang_script_data[k][1])
+    }
 
 
 def _remove_keys_from_dict(keys, some_dict):
@@ -191,12 +190,12 @@ def _create_script_to_default_lang(lang_script_data):
                 langs = script_to_used[script]
                 if langs:
                     default_lang = next(iter(langs))
-                    _log("using used lang %s from %s" % (default_lang, langs))
+                    _log(f"using used lang {default_lang} from {langs}")
                 else:
                     langs = script_to_unused[script]
                     if langs:
                         default_lang = next(iter(langs))
-                        _log("using unused lang %s from %s" % (default_lang, langs))
+                        _log(f"using unused lang {default_lang} from {langs}")
                     else:
                         _log("defaulting to 'und'")
         else:

@@ -1,18 +1,11 @@
 # Convert piecewise cubic into piecewise clothoid representation.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
-from math import hypot
-from math import atan2
 import sys
+from math import atan2, hypot
 
-import clothoid
 import pcorn
 import tocubic
-
-import offset
 
 
 def read_bz(f):
@@ -22,16 +15,15 @@ def read_bz(f):
         if len(s) > 0:
             cmd = s[-1]
             # print(s[:-1], cmd)
-            if cmd == 'm':
+            if cmd == "m":
                 sp = []
                 result.append(sp)
                 curpt = [float(x) for x in s[0:2]]
-                startpt = curpt
-            elif cmd == 'l':
+            elif cmd == "l":
                 newpt = [float(x) for x in s[0:2]]
                 sp.append((curpt, newpt))
                 curpt = newpt
-            elif cmd == 'c':
+            elif cmd == "c":
                 c1 = [float(x) for x in s[0:2]]
                 c2 = [float(x) for x in s[2:4]]
                 newpt = [float(x) for x in s[4:6]]
@@ -45,24 +37,30 @@ def plot_bzs(bzs, z0, scale, fancy=False):
         for i in range(len(sp)):
             bz = sp[i]
             tocubic.plot_bz(bz, z0, scale, i == 0)
-        print('stroke')
+        print("stroke")
         if fancy:
             for i in range(len(sp)):
                 bz = sp[i]
 
                 x0, y0 = z0[0] + scale * bz[0][0], z0[1] + scale * bz[0][1]
-                print('gsave', x0, y0, 'translate circle fill grestore')
+                print("gsave", x0, y0, "translate circle fill grestore")
                 if len(bz) == 4:
                     x1, y1 = z0[0] + scale * bz[1][0], z0[1] + scale * bz[1][1]
                     x2, y2 = z0[0] + scale * bz[2][0], z0[1] + scale * bz[2][1]
                     x3, y3 = z0[0] + scale * bz[3][0], z0[1] + scale * bz[3][1]
-                    print('gsave 0.5 setlinewidth', x0, y0, 'moveto')
-                    print(x1, y1, 'lineto stroke')
-                    print(x2, y2, 'moveto')
-                    print(x3, y3, 'lineto stroke grestore')
-                    print('gsave', x1, y1, 'translate 0.75 dup scale circle fill grestore')
-                    print('gsave', x2, y2, 'translate 0.75 dup scale circle fill grestore')
-                    print('gsave', x3, y3, 'translate 0.75 dup scale circle fill grestore')
+                    print("gsave 0.5 setlinewidth", x0, y0, "moveto")
+                    print(x1, y1, "lineto stroke")
+                    print(x2, y2, "moveto")
+                    print(x3, y3, "lineto stroke grestore")
+                    print(
+                        "gsave", x1, y1, "translate 0.75 dup scale circle fill grestore"
+                    )
+                    print(
+                        "gsave", x2, y2, "translate 0.75 dup scale circle fill grestore"
+                    )
+                    print(
+                        "gsave", x3, y3, "translate 0.75 dup scale circle fill grestore"
+                    )
 
 
 def measure_bz_cloth(seg, bz, n=100):
@@ -78,7 +76,7 @@ def measure_bz_cloth(seg, bz, n=100):
         # print(s, atan2(dy, dx),  seg.th(s))
         return [ds, dscore]
 
-    dt = 1. / n
+    dt = 1.0 / n
     t = 0
     ys = [0, 0]
     for i in range(n):
@@ -125,7 +123,7 @@ def bzs_to_pcorn(bzs, thresh=1e-9):
             if len(bz) == 2:
                 dx = bz[1][0] - bz[0][0]
                 dy = bz[1][1] - bz[0][1]
-                th = atan2(dy, dx)
+                atan2(dy, dx)
                 rsp.append(pcorn.Segment(bz[0], bz[1], 0, 0))
             else:
                 rsp.extend(cubic_bz_to_pcorn(bz, thresh))
@@ -137,83 +135,83 @@ def plot_segs(segs):
     for i in range(len(segs)):
         seg = segs[i]
         if i == 0:
-            print(seg.z0[0], seg.z0[1], 'moveto')
-        print(seg.z1[0], seg.z1[1], 'lineto')
-    print('stroke')
+            print(seg.z0[0], seg.z0[1], "moveto")
+        print(seg.z1[0], seg.z1[1], "lineto")
+    print("stroke")
     for i in range(len(segs)):
         seg = segs[i]
         if i == 0:
-            print('gsave', seg.z0[0], seg.z0[1], 'translate circle fill grestore')
-        print('gsave', seg.z1[0], seg.z1[1], 'translate circle fill grestore')
+            print("gsave", seg.z0[0], seg.z0[1], "translate circle fill grestore")
+        print("gsave", seg.z1[0], seg.z1[1], "translate circle fill grestore")
 
 
 def test_to_pcorn():
     C1 = 0.55228
     bz = [(100, 100), (100 + 400 * C1, 100), (500, 500 - 400 * C1), (500, 500)]
     for i in range(0, 13):
-        thresh = .1 ** i
+        thresh = 0.1**i
         segs = cubic_bz_to_pcorn(bz, thresh)
         plot_segs(segs)
         print(thresh, len(segs), file=sys.stderr)
-        print('0 20 translate')
+        print("0 20 translate")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with open(sys.argv[1]) as f:
         bzs = read_bz(f)
     rsps = bzs_to_pcorn(bzs, 1)
     # print(rsps)
     tocubic.plot_prolog()
-    print('grestore')
-    print('1 -1 scale 0 -720 translate')
-    print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print("grestore")
+    print("1 -1 scale 0 -720 translate")
+    print("/ss 1.5 def")
+    print("/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def")
     tot = 0
     for segs in rsps:
         curve = pcorn.Curve(segs)
         # curve = offset.offset(curve, 10)
-        print('%', curve.arclen)
-        print('%', curve.sstarts)
+        print("%", curve.arclen)
+        print("%", curve.sstarts)
         if 0:
-            print('gsave 1 0 0 setrgbcolor')
-            cmd = 'moveto'
+            print("gsave 1 0 0 setrgbcolor")
+            cmd = "moveto"
             for i in range(100):
-                s = i * .01 * curve.arclen
+                s = i * 0.01 * curve.arclen
                 x, y = curve.xy(s)
                 th = curve.th(s)
                 sth = 5 * sin(th)
                 cth = 5 * cos(th)
                 print(x, y, cmd)
-                cmd = 'lineto'
-            print('closepath stroke grestore')
+                cmd = "lineto"
+            print("closepath stroke grestore")
         for i in range(100):
-            s = i * .01 * curve.arclen
+            s = i * 0.01 * curve.arclen
             x, y = curve.xy(s)
             th = curve.th(s)
             sth = 5 * sin(th)
             cth = 5 * cos(th)
             if 0:
-                print(x - cth, y - sth, 'moveto')
-                print(x + cth, y + sth, 'lineto stroke')
+                print(x - cth, y - sth, "moveto")
+                print(x + cth, y + sth, "lineto stroke")
         if 1:
             for s in curve.find_breaks():
-                print('gsave 0 1 0 setrgbcolor')
+                print("gsave 0 1 0 setrgbcolor")
                 x, y = curve.xy(s)
-                print(x, y, 'translate 2 dup scale circle fill')
-                print('grestore')
+                print(x, y, "translate 2 dup scale circle fill")
+                print("grestore")
         # plot_segs(segs)
 
-        print('gsave 0 0 0 setrgbcolor')
+        print("gsave 0 0 0 setrgbcolor")
         optim = 3
         thresh = 1e-2
         new_bzs = tocubic.pcorn_curve_to_bzs(curve, optim, thresh)
         tot += len(new_bzs)
         plot_bzs([new_bzs], (0, 0), 1, True)
-        print('grestore')
-    print('grestore')
-    print('/Helvetica 12 selectfont')
-    print('36 720 moveto (thresh=%g optim=%d) show' % (thresh, optim))
-    print('( tot segs=%d) show' % tot)
-    print('showpage')
+        print("grestore")
+    print("grestore")
+    print("/Helvetica 12 selectfont")
+    print("36 720 moveto (thresh=%g optim=%d) show" % (thresh, optim))
+    print("( tot segs=%d) show" % tot)
+    print("showpage")
 
     # plot_bzs(bzs, (100, 100), 1)

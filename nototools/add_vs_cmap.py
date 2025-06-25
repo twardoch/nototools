@@ -31,9 +31,7 @@ from os import path
 from fontTools import ttLib
 from fontTools.ttLib.tables import _c_m_a_p
 
-from nototools import font_data
-from nototools import unicode_data
-from nototools import tool_utils
+from nototools import font_data, tool_utils, unicode_data
 
 VS_TEXT = 0xFE0E
 VS_EMOJI = 0xFE0F

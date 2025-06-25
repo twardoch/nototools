@@ -22,8 +22,7 @@ import collections
 import os
 from os import path
 
-from nototools import cldr_data
-from nototools import tool_utils
+from nototools import cldr_data, tool_utils
 
 _HTML_HEADER = """<!DOCTYPE html>
 <html>
@@ -104,7 +103,7 @@ def _get_script_to_samples():
 
         full_samples = []
         for bcp, sample_type in sorted(pref.items()):
-            filename = "%s_%s.txt" % (bcp, sample_type)
+            filename = f"{bcp}_{sample_type}.txt"
             filepath = path.join(sample_dir, filename)
             with codecs.open(filepath, "r", "utf-8") as f:
                 sample_text = f.read()

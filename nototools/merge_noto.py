@@ -15,11 +15,11 @@
 # limitations under the License.
 
 """Merges Noto fonts."""
+
 import os.path
 import tempfile
 
-from fontTools import merge
-from fontTools import ttLib
+from fontTools import merge, ttLib
 from fontTools.ttLib.tables import otTables
 
 
@@ -35,7 +35,7 @@ def make_puncless_font_name(script):
 
 
 def make_font_file_name(script, weight, directory="individual/unhinted"):
-    filename = "%s/%s-%s.ttf" % (directory, make_puncless_font_name(script), weight)
+    filename = f"{directory}/{make_puncless_font_name(script)}-{weight}.ttf"
     return filename
 
 
@@ -307,7 +307,7 @@ def main():
             if len(regular_sources) <= 1:
                 continue
 
-            print("Merging Noto Sans %s %s" % (merge_target, weight))
+            print(f"Merging Noto Sans {merge_target} {weight}")
 
             for index, fontfile in enumerate(regular_sources):
                 if not has_gsub_table(fontfile):

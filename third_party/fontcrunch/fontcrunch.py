@@ -14,9 +14,6 @@
 #
 # Contributor: Raph Levien
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 import math
 import os
@@ -34,11 +31,10 @@ else:
 from fontTools import ttLib
 from fontTools.ttLib.tables import _g_l_y_f
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), os.pardir, 'spiro', 'curves'))
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, "spiro", "curves"))
 import fromcubic
-import tocubic
 import pcorn
+import tocubic
 
 
 def lerppt(t, p0, p1):
@@ -81,7 +77,14 @@ def raise_to_cubic(bzs):
         r = []
         for bz in sp:
             if len(bz) == 3:
-                r.append((bz[0], lerppt(2. / 3, bz[0], bz[1]), lerppt(2. / 3, bz[2], bz[1]), bz[2]))
+                r.append(
+                    (
+                        bz[0],
+                        lerppt(2.0 / 3, bz[0], bz[1]),
+                        lerppt(2.0 / 3, bz[2], bz[1]),
+                        bz[2],
+                    )
+                )
             else:
                 r.append(bz)
         result.append(r)
@@ -90,10 +93,10 @@ def raise_to_cubic(bzs):
 
 def plot(bzs):
     tocubic.plot_prolog()
-    print('/ss 1.5 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
+    print("/ss 1.5 def")
+    print("/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def")
     fromcubic.plot_bzs(bzs, (100, 100), 0.25, fancy=True)
-    print('showpage')
+    print("showpage")
 
 
 def getbreaks(curve):
@@ -279,33 +282,42 @@ def plot_tt_raw(bzs, fancy=True):
             for i in range(len(sp)):
                 lastbz = sp[i - 1]
                 bz = sp[i]
-                if len(bz) != 3 or len(lastbz) != 3 or lerppt(0.5, lastbz[1], bz[1]) != bz[0]:
+                if (
+                    len(bz) != 3
+                    or len(lastbz) != 3
+                    or lerppt(0.5, lastbz[1], bz[1]) != bz[0]
+                ):
                     x, y = bz[0]
-                    print('gsave %f %f translate circle fill grestore' % (x * scale + x0, y * scale + y0))
+                    print(
+                        "gsave {:f} {:f} translate circle fill grestore".format(
+                            x * scale + x0, y * scale + y0
+                        )
+                    )
                 if len(bz) == 3:
                     x, y = bz[1]
-                    print('gsave %f %f translate circle stroke grestore' % (x * scale + x0, y * scale + y0))
+                    print(
+                        "gsave {:f} {:f} translate circle stroke grestore".format(
+                            x * scale + x0, y * scale + y0
+                        )
+                    )
 
 
-def plot_tt(bzs, orig=None, style='redcyan'):
+def plot_tt(bzs, orig=None, style="redcyan"):
     tocubic.plot_prolog()
-    print('/ss 2 def')
-    print('/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def')
-    if style == 'redcyan':
-        print('true setoverprint true setoverprintmode')
-    x0 = 100
-    y0 = 100
-    scale = 0.25
+    print("/ss 2 def")
+    print("/circle { ss 0 moveto currentpoint exch ss sub exch ss 0 360 arc } bind def")
+    if style == "redcyan":
+        print("true setoverprint true setoverprintmode")
     if orig:
-        print('0 1 1 0 setcmykcolor')
-        fancy = (style == 'redcyan')
+        print("0 1 1 0 setcmykcolor")
+        fancy = style == "redcyan"
         plot_tt_raw(orig, fancy)
-    if style == 'redcyan':
-        print('1 0 0 0 setcmykcolor')
-    elif style == 'redblack':
-        print('0 0 0 1 setcmykcolor')
+    if style == "redcyan":
+        print("1 0 0 0 setcmykcolor")
+    elif style == "redblack":
+        print("0 0 0 1 setcmykcolor")
     plot_tt_raw(bzs)
-    print('showpage')
+    print("showpage")
 
 
 def segment_sp(sp):
@@ -355,8 +367,8 @@ def seg_to_string(sp, bk0, bk1):
         if len(bz) == 2:
             # just represent lines as quads
             bz = (bz[0], lerppt(0.5, bz[0], bz[1]), bz[1])
-        res.append(' '.join(['%g' % z for xy in bz for z in xy]) + '\n')
-    return ''.join(res)
+        res.append(" ".join(["%g" % z for xy in bz for z in xy]) + "\n")
+    return "".join(res)
 
 
 USE_SUBDIRS = True
@@ -368,14 +380,14 @@ def seg_fn(segstr):
         fn = md5.new(segstr).hexdigest()[:16]
     else:
         if isinstance(segstr, str):
-            segstr = segstr.encode('utf-8')
+            segstr = segstr.encode("utf-8")
         fn = hashlib.md5(segstr).hexdigest()[:16]
     if USE_SUBDIRS:
         dirname = fn[:2]
         if not os.path.exists(dirname):
             os.mkdir(dirname)
-        fn = dirname + '/' + fn[2:]
-    fn += '.bez'
+        fn = dirname + "/" + fn[2:]
+    fn += ".bez"
     return fn
 
 
@@ -388,15 +400,15 @@ def gen_segs(glyph):
             if bk1 != (bk0 + 1) % len(sp) or len(sp[bk0]) != 2:
                 segstr = seg_to_string(sp, bk0, bk1)
                 fn = seg_fn(segstr)
-                open(fn, 'w').write(segstr)
+                open(fn, "w").write(segstr)
 
 
 def generate(fn):
     f = ttLib.TTFont(fn)
-    glyf = f['glyf']
+    glyf = f["glyf"]
     for name in glyf.keys():
         g = glyf[name]
-        print('generating', name)
+        print("generating", name)
         gen_segs(g)
 
 
@@ -424,7 +436,11 @@ def bzs_to_glyph(bzs, glyph):
         for i in range(len(sp)):
             lastbz = sp[i - 1]
             bz = sp[i]
-            if len(bz) != 3 or len(lastbz) != 3 or lerppt(0.5, lastbz[1], bz[1]) != bz[0]:
+            if (
+                len(bz) != 3
+                or len(lastbz) != 3
+                or lerppt(0.5, lastbz[1], bz[1]) != bz[0]
+            ):
                 coordinates.append(pt_to_int(bz[0]))
                 flags.append(1)
             if len(bz) == 3:
@@ -446,18 +462,18 @@ def repack_glyph(glyph):
             bk0, bk1 = bks[i], bks[(i + 1) % len(bks)]
             if bk1 != (bk0 + 1) % len(sp) or len(sp[bk0]) != 2:
                 segstr = seg_to_string(sp, bk0, bk1)
-                fn = seg_fn(segstr) + 'opt'
+                fn = seg_fn(segstr) + "opt"
                 newsp.extend(read_bzs(fn))
             else:
                 newsp.append(sp[bk0])
         newbzs.append(newsp)
     bzs_to_glyph(newbzs, glyph)
-    plot_tt(newbzs, bzs, style='redblack')
+    plot_tt(newbzs, bzs, style="redblack")
 
 
 def repack(fn, newfn):
     f = ttLib.TTFont(fn)
-    glyf = f['glyf']
+    glyf = f["glyf"]
     for name in glyf.keys():
         g = glyf[name]
         if not g.isComposite():
@@ -467,9 +483,9 @@ def repack(fn, newfn):
 
 
 def main(argv):
-    if argv[1] == 'gen':
+    if argv[1] == "gen":
         generate(sys.argv[2])
-    elif argv[1] == 'pack':
+    elif argv[1] == "pack":
         repack(sys.argv[2], sys.argv[3] if len(argv) >= 3 else None)
 
 

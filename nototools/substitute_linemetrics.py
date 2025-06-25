@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Substitutes the line metrics in a font by using the one in another font.
-"""
-from fontTools.ttLib import TTFont
+"""Substitutes the line metrics in a font by using the one in another font."""
+
 from argparse import ArgumentParser
+
+from fontTools.ttLib import TTFont
 
 
 def main(arg=None):

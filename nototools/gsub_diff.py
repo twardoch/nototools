@@ -20,13 +20,12 @@ made. It provides `find_gsub_diffs` which compares the OpenType substitution
 rules in these files, reporting the differences via a returned string.
 """
 
-
 import re
 import subprocess
 import tempfile
 
 
-class GsubDiffFinder(object):
+class GsubDiffFinder:
     """Provides methods to report diffs in GSUB content between ttxn outputs."""
 
     def __init__(self, file_a, file_b, output_lines=20):
@@ -78,7 +77,9 @@ class GsubDiffFinder(object):
         rules = set()
         for name in re.findall(feature_name_rx, text):
             contents = re.findall(contents_rx % (name, name), text, re.S)
-            assert len(contents) == 1, "Multiple %s features in %s" % (name, filename)
+            assert len(contents) == 1, "Multiple {} features in {}".format(
+                name, filename
+            )
             contents = contents[0]
             for lhs, rhs in re.findall(rule_rx, contents):
                 rules.add((name, lhs, rhs))

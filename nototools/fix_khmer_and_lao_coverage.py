@@ -23,9 +23,7 @@ import sys
 
 from fontTools import ttLib
 
-from nototools import coverage
-from nototools import font_data
-from nototools import opentype_data
+from nototools import coverage, font_data, opentype_data
 
 
 def merge_chars_from_bank(orig_font, bank_font, target_font, chars):

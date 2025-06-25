@@ -15,15 +15,12 @@
 # limitations under the License.
 
 """Compare two cmap data files produced by lint_cmap_reqs or
-   noto_font_cmaps."""
+noto_font_cmaps."""
 
 import argparse
 import collections
 
-from nototools import cmap_data
-from nototools import lint_config
-from nototools import tool_utils
-from nototools import unicode_data
+from nototools import cmap_data, lint_config, tool_utils, unicode_data
 
 
 def title_from_metadata(metadata):
@@ -257,7 +254,7 @@ def report_compare(compare_result, detailed=True):
     print("target: %s" % target_title)
     for script in sorted(compare):
         added, removed, xadded, xremoved = compare[script]
-        label = "%s # %s" % (script, base_map[script].name)
+        label = f"{script} # {base_map[script].name}"
         report_cmap_compare(
             label, added, removed, xadded, xremoved, inverted_target, detailed
         )
@@ -271,7 +268,7 @@ def report_interscript_compare(compare_result, detailed=True):
     for t in sorted(compare):
         added, removed, xadded, xremoved = compare[t]
         base_script, target_script = t
-        label = "base: %s (%s), target: %s (%s)" % (
+        label = "base: {} ({}), target: {} ({})".format(
             base_script,
             base_map[base_script].name,
             target_script,
@@ -317,13 +314,13 @@ def main():
     parser.add_argument(
         "-na",
         "--no_additions",
-        help="do not report additions (in target " "but not base)",
+        help="do not report additions (in target but not base)",
         action="store_true",
     )
     parser.add_argument(
         "-nr",
         "--no_removals",
-        help="do not report removals (in base " "but not target)",
+        help="do not report removals (in base but not target)",
         action="store_true",
     )
     parser.add_argument("-d", "--detailed", help="report details", action="store_true")

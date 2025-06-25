@@ -15,8 +15,6 @@
 # limitations under the License.
 # test reading bitmap dump
 
-from __future__ import absolute_import
-from __future__ import print_function
 
 """Find a good pairing of glyph images.
 
@@ -47,7 +45,6 @@ from fontTools import ttLib
 from PIL import Image
 
 from nototools import font_data
-
 from nototools.glyph_image import glyph_image
 
 PairInfo = collections.namedtuple(
@@ -57,7 +54,7 @@ PairInfo = collections.namedtuple(
 )
 
 
-class HungarianMatcher(object):
+class HungarianMatcher:
     """Implements the 'Hungarian matching' algorithm to return the 'best'
     pairing of rows with columns (which might differ in number) based on
     the costs in the data matrix."""

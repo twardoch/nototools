@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 #
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -22,8 +21,7 @@ import os
 import shutil
 import string
 
-from nototools import notoconfig
-from nototools import tool_utils
+from nototools import notoconfig, tool_utils
 
 CLDR_SUBDIRS = ["common/main", "common/properties", "exemplars/main", "seed/main"]
 
@@ -77,7 +75,7 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=""):
         src = os.path.join(cldr_repo, subdir)
         dst = os.path.join(noto_cldr, subdir)
         print("replacing directory %s..." % subdir)
-        print("...by copying from %s to %s" % (src, dst))
+        print(f"...by copying from {src} to {dst}")
         if os.path.exists(dst):
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
@@ -94,7 +92,7 @@ def update_cldr(noto_repo, cldr_repo, update=False, cldr_tag=""):
 
     # print commit message
     tag_string = (" tag %s" % cldr_tag) if cldr_tag else ""
-    print("Update CLDR data to SVN r%s%s." % (cldr_version, tag_string))
+    print(f"Update CLDR data to SVN r{cldr_version}{tag_string}.")
 
 
 def main():

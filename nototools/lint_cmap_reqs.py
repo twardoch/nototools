@@ -19,12 +19,8 @@
 import argparse
 import sys
 
-from nototools import lint_config
-from nototools import noto_data
-from nototools import opentype_data
-from nototools import unicode_data
-from nototools import cmap_data
-
+from nototools import (cmap_data, lint_config, noto_data, opentype_data,
+                       unicode_data)
 
 _PHASE_TWO_SCRIPTS = """
   Arab, Aran, Armi, Armn, Avst, Bali, Bamu, Batk, Beng, Brah, Bugi, Buhd, Cans,
@@ -197,7 +193,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--scripts",
-        help="list of pseudo-script codes, empty for all " "phase 2 scripts",
+        help="list of pseudo-script codes, empty for all phase 2 scripts",
         metavar="code",
         nargs="*",
     )
@@ -236,7 +232,7 @@ def main():
     args = parser.parse_args()
 
     if not args.scripts:
-        scripts = set(s.strip() for s in _PHASE_TWO_SCRIPTS.split(","))
+        scripts = {s.strip() for s in _PHASE_TWO_SCRIPTS.split(",")}
     else:
         scripts = _check_scripts(args.scripts)
 

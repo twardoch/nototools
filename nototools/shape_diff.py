@@ -28,22 +28,20 @@ for some offset). Image comparison is usually either slow (hi-res) or inaccurate
 large errors.
 """
 
-from __future__ import division
-
 import os
-from PIL import Image
 import re
-from io import BytesIO
 import subprocess
+from io import BytesIO
 
 import booleanOperations
 from defcon import Glyph
 from fontTools.pens.basePen import BasePen
-from fontTools.ttLib import TTFont
 from fontTools.pens.pointPen import PointToSegmentPen
+from fontTools.ttLib import TTFont
+from PIL import Image
 
-from nototools.glyph_area_pen import GlyphAreaPen
 from nototools import hb_input
+from nototools.glyph_area_pen import GlyphAreaPen
 from nototools.py23 import unichr
 
 GDEF_UNDEF = 0
@@ -61,7 +59,7 @@ class ShapeDiffFinder:
         self.gdef_a = {}
         if (
             "GDEF" in self.font_a
-            and not self.font_a["GDEF"].table.GlyphClassDef is None
+            and self.font_a["GDEF"].table.GlyphClassDef is not None
         ):
             self.gdef_a = self.font_a["GDEF"].table.GlyphClassDef.classDefs
 
@@ -71,7 +69,7 @@ class ShapeDiffFinder:
         self.gdef_b = {}
         if (
             "GDEF" in self.font_b
-            and not self.font_b["GDEF"].table.GlyphClassDef is None
+            and self.font_b["GDEF"].table.GlyphClassDef is not None
         ):
             self.gdef_b = self.font_b["GDEF"].table.GlyphClassDef.classDefs
 
@@ -373,7 +371,9 @@ class ShapeDiffFinder:
             report.append("Glyph unicode values don't match in %s" % font)
             for name, univals in sorted(mismatches):
                 univals = [(("0x%04X" % v) if v else str(v)) for v in univals]
-                report.append("  %s: %s in A, %s in B" % (name, univals[0], univals[1]))
+                report.append(
+                    f"  {name}: {univals[0]} in A, {univals[1]} in B"
+                )
         report.append("")
 
         ShapeDiffFinder._add_simple_report(

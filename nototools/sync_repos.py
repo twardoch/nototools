@@ -90,7 +90,7 @@ def noto_checkout(
                 found = True
                 break
         if not found:
-            failed_tags.append("%s: %s" % (r, t))
+            failed_tags.append(f"{r}: {t}")
 
     if failed_tags:
         sys.stderr.write("failed to find:\n  %s\n" % "\n  ".join(failed_tags))
@@ -105,7 +105,9 @@ def noto_checkout(
             "%schecked out:\n  %s"
             % (
                 "would have " if dry_run else "",
-                "\n  ".join("%s: %s" % (r, t) for r, t in zip(_REPOS, resolved_tags)),
+                "\n  ".join(
+                    f"{r}: {t}" for r, t in zip(_REPOS, resolved_tags)
+                ),
             )
         )
 

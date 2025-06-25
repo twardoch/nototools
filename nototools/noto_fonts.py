@@ -17,19 +17,14 @@
 import argparse
 import collections
 import os
-from os import path
 import re
 import sys
+from os import path
 
 from fontTools import ttLib
 
-from nototools import cldr_data
-from nototools import coverage
-from nototools import font_data
-from nototools import lang_data
-from nototools import noto_data
-from nototools import tool_utils
-from nototools import unicode_data
+from nototools import (cldr_data, coverage, font_data, lang_data, noto_data,
+                       tool_utils, unicode_data)
 
 # The '[xxx]' syntax is used to get the noto-xxx value from notoconfig.
 # for now we exclude alpha, the phase 3 fonts are here but we don't use
@@ -167,7 +162,7 @@ _FONT_NAME_REGEX = (
     "-?"
     "((?:Semi|Extra)?Condensed)?"
     "(|%s)?" % "|".join(WEIGHTS.keys()) + "((?<!Old)Italic)?"
-    "\.(ttf|ttc|otf)"
+    r"\.(ttf|ttc|otf)"
 )
 
 
@@ -264,7 +259,7 @@ def get_noto_font(filepath, family_name="Arimo|Cousine|Tinos|Noto", phase=3):
         try:
             script = convert_to_four_letter(script)
         except ValueError:
-            sys.stderr.write("unknown script: %s for %s\n" % (script, filename))
+            sys.stderr.write(f"unknown script: {script} for {filename}\n")
             return None
 
     if not weight:
@@ -550,7 +545,7 @@ def get_noto_fonts(paths=NOTO_FONT_PATHS):
             font = get_noto_font(filepath)
             if not font:
                 sys.stderr.write(
-                    "bad font filename in %s: '%s'.\n" % ((font_dir, filename))
+                    f"bad font filename in {font_dir}: '{filename}'.\n"
                 )
                 continue
 

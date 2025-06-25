@@ -59,7 +59,7 @@ def _setup():
     paths = [path.expanduser("~/.notoconfig"), "/usr/local/share/noto/config"]
     for configfile in paths:
         if path.exists(configfile):
-            with open(configfile, "r") as f:
+            with open(configfile) as f:
                 for line in f:
                     line = line.strip()
                     if not line or line.startswith("#"):

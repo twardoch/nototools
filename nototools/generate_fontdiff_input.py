@@ -19,10 +19,10 @@ Usage: "python generate_input.py [font_path_a] [font_path_b] [specimen_path]".
 Each glyph will be put on its own line in the output HTML.
 """
 
-
 import sys
 
 from fontTools import ttLib
+
 from nototools import hb_input
 
 
@@ -45,7 +45,7 @@ def main(font_path_a, font_path_b, specimen_path):
             style = ' style="font-feature-settings: %s;"' % ", ".join(
                 "'%s'" % f for f in features
             )
-        out_lines.append("<p%s>%s</p>" % (style, text))
+        out_lines.append(f"<p{style}>{text}</p>")
     out_lines.append("</html>")
     out_text = "\n".join(out_lines)
 

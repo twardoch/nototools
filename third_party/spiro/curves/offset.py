@@ -1,10 +1,7 @@
 # offset curve of piecewise cornu curves
 
-from __future__ import absolute_import
 
-from math import sin
-from math import cos
-from math import atan2
+from math import atan2, cos, sin
 
 import pcorn
 from clothoid import mod_2pi

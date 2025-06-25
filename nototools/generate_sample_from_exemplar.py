@@ -23,20 +23,16 @@ import locale
 import os
 from os import path
 
+from nototools import (cldr_data, create_image, extra_locale_data, tool_utils,
+                       unicode_data)
 from nototools.py23 import unichr
-from nototools import cldr_data
-from nototools import create_image
-from nototools import extra_locale_data
-from nototools import tool_utils
-from nototools import unicode_data
-
 
 try:
-    from icu import Locale, Collator
+    from icu import Collator, Locale
 
     print("will use icu locale-specific order")
     _HAVE_ICU = True
-except ImportError as e:
+except ImportError:
     print("will use default locale sort order")
     _HAVE_ICU = False
 
@@ -93,7 +89,7 @@ def get_script_to_exemplar_data_map():
             # fix exemplars that look incorrect
             if script == "Arab" and "d" in exemplar_list:
                 if _VERBOSE:
-                    print("found 'd' in %s for %s" % (src, lsrv))
+                    print(f"found 'd' in {src} for {lsrv}")
                 no_latin = True
             else:
                 no_latin = False
@@ -128,7 +124,10 @@ def get_script_to_exemplar_data_map():
                     % (
                         src,
                         ", ".join(
-                            ["\u200e%s\u200e (%x)" % (cp, ord(cp)) for cp in dup_chars]
+                            [
+                                f"\u200e{cp}\u200e ({ord(cp):x})"
+                                for cp in dup_chars
+                            ]
                         ),
                     )
                 )
@@ -421,7 +420,7 @@ def sort_for_script(cp_list, script):
         print("cannot sort for script, no lang for %s" % script)
         return cp_list
     if _HAVE_ICU:
-        from icu import Locale, Collator
+        from icu import Collator, Locale
 
         loc = Locale(lang + "_" + script)
         col = Collator.createInstance(loc)
@@ -565,7 +564,6 @@ def generate_samples(dstdir, imgdir, summary):
         dstdir = tool_utils.ensure_dir_exists(dstdir)
         print("writing files to %s" % dstdir)
 
-    verbose = summary
     script_map = get_script_to_exemplar_data_map()
     for script in sorted(script_map):
         sample, info = generate_sample_for_script(script, script_map[script])

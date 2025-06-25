@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-from __future__ import print_function
 
 """
 Generate lists of codepoints prefixed with 'u' or 'uni' from cmap data file.
@@ -25,11 +23,10 @@ for their tools, so let's just save this script.
 """
 
 import argparse
-from os import path
 import sys
+from os import path
 
-from nototools import cmap_data
-from nototools import tool_utils
+from nototools import cmap_data, tool_utils
 
 
 def glyphstr(cp):
@@ -51,7 +48,7 @@ def generate_single(cmapdata, script, outfile):
         if script == row.script:
             cps = tool_utils.parse_int_ranges(row.ranges)
             write_cp_list(cps, outfile)
-            print("wrote %s to %s" % (script, outfile), file=sys.stderr)
+            print(f"wrote {script} to {outfile}", file=sys.stderr)
             return
     raise ValueError('no script "%s" in cmap data' % script)
 
@@ -101,7 +98,7 @@ def main():
     parser.add_argument(
         "-d",
         "--dest_dir",
-        help="directory for output, (defaults to current " "directory)",
+        help="directory for output, (defaults to current directory)",
         metavar="dir",
         default=".",
     )
@@ -116,8 +113,7 @@ def main():
     parser.add_argument(
         "-n",
         "--namepats",
-        help="name patterns used to generate output "
-        'filenames (default "cps_%%s.txt")',
+        help='name patterns used to generate output filenames (default "cps_%%s.txt")',
         default=default_namepats,
         metavar="npat",
         nargs="+",

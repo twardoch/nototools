@@ -200,7 +200,7 @@ def git_checkout(repo, branch_or_tag, verbose=False):
             ["git", "checkout", branch_or_tag], stderr=subprocess.STDOUT
         )
         if verbose:
-            print("%s:\n%s\n-----" % (repo, result))
+            print(f"{repo}:\n{result}\n-----")
 
 
 def git_mv(repo, old, new):
@@ -439,7 +439,7 @@ def git_add_all(repo_subdir):
 def svn_get_version(repo):
     with temp_chdir(repo):
         version_string = subprocess.check_output(["svnversion", "-c"]).strip()
-        colon_index = version_string.find(":".encode("utf-8"))
+        colon_index = version_string.find(b":")
         if colon_index >= 0:
             version_string = version_string[colon_index + 1 :]
     return version_string
@@ -485,7 +485,7 @@ def parse_int_ranges(
         else:
             if slen > len(prev_str):
                 raise ValueError(
-                    "suffix '%s' is longer than previous '%s'" % (suffix, prev_str)
+                    f"suffix '{suffix}' is longer than previous '{prev_str}'"
                 )
             next_str = prev_str[:-slen] + suffix
 
@@ -669,7 +669,7 @@ def read_lines(infile, ignore_comments=True, strip=True, skip_empty=True):
 
 
 def _read_filename_list(filenames):
-    with open(filenames, "r") as f:
+    with open(filenames) as f:
         return [resolve_path(n.strip()) for n in f if n]
 
 

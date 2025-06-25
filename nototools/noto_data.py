@@ -14,8 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Noto-specific data about division of ranges between fonts.
-"""
+"""Noto-specific data about division of ranges between fonts."""
 
 __author__ = "roozbeh@google.com (Roozbeh Pournader)"
 

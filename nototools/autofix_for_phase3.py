@@ -28,18 +28,14 @@ hinted.  We also put more info into the version string.
 import argparse
 import datetime
 import os
-from os import path
 import re
 import subprocess
+from os import path
 
 from fontTools import ttLib
 
+from nototools import font_data, noto_data, noto_fonts, tool_utils
 from nototools.py23 import basestring
-from nototools import font_data
-from nototools import noto_data
-from nototools import noto_fonts
-from nototools import tool_utils
-
 
 _new_version_re = re.compile(r"^(?:keep|[12]\.\d{3})$")
 
@@ -47,7 +43,9 @@ _new_version_re = re.compile(r"^(?:keep|[12]\.\d{3})$")
 def _check_version(version):
     if not (version is None or _new_version_re.match(version)):
         raise Exception(
-            'version "%s" did not match regex "%s"' % (version, _new_version_re.pattern)
+            'version "{}" did not match regex "{}"'.format(
+                version, _new_version_re.pattern
+            )
         )
 
 
@@ -69,19 +67,19 @@ def _check_version_info(version_info):
     year = int(m.group(1))
     month = int(m.group(2))
     day = int(m.group(3))
-    commit_hash = m.group(4)
+    m.group(4)
     today = datetime.date.today()
     if 2017 <= year:
         try:
             encoded_date = datetime.date(year, month, day)
-        except Exception as e:
+        except Exception:
             raise Exception(
                 "%04d-%02d-%02d in %s is not a valid date"
                 % (year, month, day, version_info)
             )
         if encoded_date > today:
             raise Exception(
-                "%s in %s is after the current date" % (encoded_date, version_info)
+                f"{encoded_date} in {version_info} is after the current date"
             )
     else:
         raise Exception("date in %s appears too far in the past" % version_info)
@@ -122,12 +120,12 @@ def _get_fonts_repo_version_info(repo_tag):
     date_re = re.compile(r"(\d{4})-(\d{2})-(\d{2})")
     m = date_re.match(date)
     if not m:
-        raise Exception('could not match "%s" with "%s"' % (date, date_re.pattern))
+        raise Exception(f'could not match "{date}" with "{date_re.pattern}"')
     ymd = "".join(m.groups())
 
     # hack tag to get the formal repo name.  strip enclosing brackets...
     repo_name = "noto-" + repo_tag[1:-1].replace("_", "-")
-    return "GOOG;%s:%s:%s" % (repo_name, ymd, commit[:12])
+    return f"GOOG;{repo_name}:{ymd}:{commit[:12]}"
 
 
 def _check_autohint(script):
@@ -152,7 +150,7 @@ def _expand_font_names(font_names, result=None):
             result.add(n)
         else:
             filename = n[1:]
-            with open(filename, "r") as f:
+            with open(filename) as f:
                 new_names = f.readlines()
             new_names = [strip_comment(n) for n in new_names]
             new_names = [n for n in new_names if n]
@@ -270,10 +268,12 @@ def get_new_version(font, relfont, nversion):
             if rversion is not None:
                 if n_mm < r_mm:
                     raise Exception(
-                        "new version %s < release version %s" % (nversion, rversion)
+                        f"new version {nversion} < release version {rversion}"
                     )
             if n_mm < mm:
-                raise Exception("new version %s < old version %s" % (nversion, version))
+                raise Exception(
+                    f"new version {nversion} < old version {version}"
+                )
             return nversion
 
     # No new verson string, so compute one.  If we have a phase 3 version,
@@ -324,7 +324,7 @@ def _autohint_code(f, script):
 def autohint_font(src, dst, script, dry_run):
     code = _autohint_code(src, script)
     if code == "not-hinted":
-        print("Warning: no hinting information for %s, script %s" % (src, script))
+        print(f"Warning: no hinting information for {src}, script {script}")
         return
 
     if code is None:
@@ -339,10 +339,10 @@ def autohint_font(src, dst, script, dry_run):
         print('dry run would autohint:\n  "%s"' % " ".join(args))
         return
 
-    hinted_dir = tool_utils.ensure_dir_exists(path.dirname(dst))
+    tool_utils.ensure_dir_exists(path.dirname(dst))
     try:
         subprocess.check_call(args)
-    except Exception as e:
+    except Exception:
         print("### failed to autohint %s" % src)
         # we failed to autohint, let's continue anyway
         # however autohint will have left an empty file there, remove it.
@@ -351,7 +351,7 @@ def autohint_font(src, dst, script, dry_run):
         except:
             pass
 
-    print("wrote autohinted %s using %s" % (dst, code))
+    print(f"wrote autohinted {dst} using {code}")
 
 
 def _alert(val_name, cur_val, new_val):
@@ -423,7 +423,7 @@ def fix_font(f, dst_dir, rel_dir, version, version_info, autohint, dry_run):
         names = font_data.get_name_records(font)
         NAME_ID = 5
         font_version = names[NAME_ID]
-        expected_version = "Version %s;%s" % (expected_font_revision, version_info)
+        expected_version = f"Version {expected_font_revision};{version_info}"
         if font_version != expected_version:
             _alert("version string", font_version, expected_version)
             font_data.set_name_record(font, NAME_ID, expected_version)
@@ -484,7 +484,7 @@ def main():
     parser.add_argument(
         "-r",
         "--release_dir",
-        help="directory containing release fonts (opt " " [fonts])",
+        help="directory containing release fonts (opt  [fonts])",
         metavar="dir",
         nargs="?",
         const="[fonts]",
@@ -492,7 +492,7 @@ def main():
     parser.add_argument(
         "-f",
         "--fonts",
-        help="paths of fonts to swat (to fetch from a file" 'use "@filename")',
+        help='paths of fonts to swat (to fetch from a fileuse "@filename")',
         metavar="font",
         nargs="+",
     )
@@ -502,7 +502,7 @@ def main():
     parser.add_argument(
         "-i",
         "--version_info",
-        help="version info string (opt [fonts] to use " "fonts info)",
+        help="version info string (opt [fonts] to use fonts info)",
         metavar="str",
         nargs="?",
         const="[fonts]",

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8-unix -*-
 #
 # Copyright 2014 Google Inc. All rights reserved.
 #
@@ -22,17 +21,15 @@ __author__ = "roozbeh@google.com (Roozbeh Pournader)"
 import argparse
 import codecs
 import os
-from os import path
 import string
-
-from nototools import notoconfig
-from nototools.py23 import basestring
-from nototools.py23 import unichr
+from os import path
 
 import cairo
 import pango
 import pangocairo
 
+from nototools import notoconfig
+from nototools.py23 import basestring, unichr
 
 _fonts_conf_template = """<?xml version="1.0"?>
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
@@ -84,8 +81,8 @@ def setup_fonts_conf():
         try:
             with open(fonts_conf, "w") as f:
                 f.write(conf_text)
-        except IOError as e:
-            raise Exception("unable to write %s: %s" % (fonts_conf, e))
+        except OSError as e:
+            raise Exception(f"unable to write {fonts_conf}: {e}")
 
     # Note: ensure /etc/fonts/conf.d/10-scale-bitmap-fonts.conf is
     # in sync with fontconfig to make sure color emoji font scales properly.
@@ -529,14 +526,14 @@ def main():
         "-mh",
         "--maxheight",
         metavar="ht",
-        help="0 ignore, <0 for num lines, " "else max height",
+        help="0 ignore, <0 for num lines, else max height",
         default=0,
     )
     parser.add_argument(
         "-hm",
         "--horiz_margin",
         metavar="mar",
-        help="left and right margin, " "to handle large italic side bearings",
+        help="left and right margin, to handle large italic side bearings",
         default=0,
     )
 
@@ -564,7 +561,7 @@ def main():
         if args.text[0] == "@":
             if not args.out:
                 args.out = path.splitext(args.text[1:])[0] + "." + args.type
-            with open(args.text[1:], "r") as f:
+            with open(args.text[1:]) as f:
                 args.text = f.read()
         else:
             args.text = args.text.decode("unicode-escape")

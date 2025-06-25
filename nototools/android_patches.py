@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 # Copyright 2016 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,20 +19,16 @@ import argparse
 import codecs
 import glob
 import os
-from os import path
 import shutil
 import tempfile
-
-from nototools.py23 import unichr
-from nototools import subset
-from nototools import coverage
-from nototools import fix_khmer_and_lao_coverage as merger
-from nototools import font_data
-from nototools import tool_utils
-from nototools import ttc_utils
-from nototools import unicode_data
+from os import path
 
 from fontTools import ttLib
+
+from nototools import coverage
+from nototools import fix_khmer_and_lao_coverage as merger
+from nototools import font_data, subset, tool_utils, ttc_utils, unicode_data
+from nototools.py23 import unichr
 
 
 def patch_hyphen(srcdir, dstdir, copy_unchanged=True):
@@ -339,7 +334,7 @@ def _format_set(char_set, name, filename):
     lines = ["%s = {" % name]
     for cp in sorted(char_set):
         name = unicode_data.name(cp)
-        lines.append("    0x%04X,  # %s %s" % (cp, unichr(cp), name))
+        lines.append(f"    0x{cp:04X},  # {unichr(cp)} {name}")
     lines.append("}\n")
     with codecs.open(filename, "w", "UTF-8") as f:
         f.write("\n".join(lines))
@@ -450,14 +445,14 @@ def main():
     parser.add_argument(
         "-s",
         "--srcdir",
-        help="directory containing fonts to patch " "(default %s)" % SRC_DIR,
+        help="directory containing fonts to patch (default %s)" % SRC_DIR,
         default=SRC_DIR,
         metavar="dir",
     )
     parser.add_argument(
         "-d",
         "--dstdir",
-        help="directory into which to write patched fonts " "(default %s)" % DST_DIR,
+        help="directory into which to write patched fonts (default %s)" % DST_DIR,
         default=DST_DIR,
         metavar="dir",
     )

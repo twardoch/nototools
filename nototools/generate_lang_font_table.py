@@ -22,12 +22,11 @@ Generate a csv with the following columns:
 - ui status (UI, <empty>)
 - font name
 
-This will start with a canned list of languages for now. We could 
+This will start with a canned list of languages for now. We could
 generate a more comprehensive list from our data.
 """
 
-from nototools import cldr_data
-from nototools import noto_fonts
+from nototools import cldr_data, noto_fonts
 
 LANGS = (
     "af,am,ar,az,bg,bn,bs,ca,cs,da,de,el,en,en-US,es,es-419,et,eu,fa,fi,"

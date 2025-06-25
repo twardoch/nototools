@@ -16,8 +16,9 @@
 import tempfile
 import unittest
 
-from nototools.gpos_diff import GposDiffFinder
 from hb_input_test import make_font
+
+from nototools.gpos_diff import GposDiffFinder
 
 
 class GposDiffFinderText(unittest.TestCase):

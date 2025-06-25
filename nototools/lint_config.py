@@ -153,7 +153,7 @@ def write_int_ranges(int_values, in_hex=True, sep=" "):
     return sep.join(num_list)
 
 
-class IntSetFilter(object):
+class IntSetFilter:
     """Tests whether an int (glyph or code point) is in a set."""
 
     def __init__(self, accept_if_in, intset):
@@ -165,7 +165,7 @@ class IntSetFilter(object):
         return self.accept_if_in == (cp in self.intset)
 
 
-class FontInfo(object):
+class FontInfo:
     def __init__(
         self,
         filename,
@@ -194,7 +194,7 @@ class FontInfo(object):
         return str(self.__dict__)
 
 
-class FontCondition(object):
+class FontCondition:
     def _init_fn_map():
         def test_lt(lhs, rhs):
             return float(lhs) < float(rhs)
@@ -276,7 +276,7 @@ class FontCondition(object):
         self.version = version
 
     def modify(self, condition_name, fn_name, value):
-        if not condition_name in self.__dict__:
+        if condition_name not in self.__dict__:
             raise ValueError("FontCondition does not recognize: %s" % condition_name)
 
         if fn_name == "*":
@@ -368,15 +368,15 @@ class FontCondition(object):
                     if not cond_name:
                         cond_name = str(fn)
                     cond_value = str(val)
-            return "%s %s" % (cond_name, cond_value)
+            return f"{cond_name} {cond_value}"
 
         output = [
-            "\n  %s: %s" % (k, value_str(v)) for k, v in self.__dict__.items() if v
+            f"\n  {k}: {value_str(v)}" for k, v in self.__dict__.items() if v
         ]
         return "condition:%s" % "".join(output)
 
 
-class TestSpec(object):
+class TestSpec:
     data = """
   filename -- filename tests
     script
@@ -547,7 +547,7 @@ class TestSpec(object):
 
     def _get_single_tag(self, tag):
         """Resolve tag to a single node"""
-        if not tag in self.tag_set:
+        if tag not in self.tag_set:
             unique_tag = None
             # try to find a unique tag with this as a segment
             for t in TestSpec.tag_set:
@@ -595,7 +595,9 @@ class TestSpec(object):
         if not allowed_options[0]:
             raise ValueError("tag '%s' does not allow options" % tag)
         if not re.match(allowed_options[0], relation):
-            raise ValueError("tag '%s' does not allow relation '%s'" % (tag, relation))
+            raise ValueError(
+                f"tag '{tag}' does not allow relation '{relation}'"
+            )
         if not re.match(allowed_options[1], arg_type):
             raise ValueError(
                 "tag '%s' and relation '%s' does not allow arg type %s"
@@ -688,7 +690,7 @@ class TestSpec(object):
         return "\n".join(output)
 
 
-class LintTests(object):
+class LintTests:
     def __init__(self, tag_set, tag_filters):
         self.tag_set = tag_set
         self.tag_filters = tag_filters
@@ -735,7 +737,7 @@ class LintTests(object):
             for tag in sorted(self.tag_set):
                 tag_filter = self.tag_filters.get(tag, None)
                 if tag_filter:
-                    lines.append("%s %s" % (tag, tag_filter))
+                    lines.append(f"{tag} {tag_filter}")
                 else:
                     lines.append(tag)
         if self.run_log:
@@ -747,7 +749,7 @@ class LintTests(object):
         return "\n".join(lines)
 
 
-class LintSpec(object):
+class LintSpec:
     def __init__(self):
         self.specs = []
 

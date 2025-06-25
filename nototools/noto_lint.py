@@ -27,30 +27,20 @@ import collections
 import itertools
 import json
 import math
-from os import path
 import re
 import subprocess
 import sys
 import tempfile
+from os import path
 
-from fontTools import subset
-from fontTools import ttLib
-from fontTools.ttLib.tables import otTables
-from fontTools.misc import arrayTools
-from fontTools.misc import bezierTools
+from fontTools import subset, ttLib
+from fontTools.misc import arrayTools, bezierTools
 from fontTools.pens import basePen
+from fontTools.ttLib.tables import otTables
 
-from nototools import cmap_data
-from nototools import font_data
-from nototools import lint_config
-from nototools import notoconfig
-from nototools import noto_data
-from nototools import noto_fonts
-from nototools import noto_names
-from nototools import opentype_data
-from nototools import render
-from nototools import tool_utils
-from nototools import unicode_data
+from nototools import (cmap_data, font_data, lint_config, noto_data,
+                       noto_fonts, noto_names, notoconfig, opentype_data,
+                       render, tool_utils, unicode_data)
 from nototools.py23 import unichr
 
 try:
@@ -83,7 +73,7 @@ def printable_unicode_range(input_char_set):
         if last == first + 1:
             part = "%04X" % first
         else:
-            part = "%04X..%04X" % (first, last - 1)
+            part = f"{first:04X}..{last - 1:04X}"
         parts_list.append(part)
     return ", ".join(parts_list)
 
@@ -338,7 +328,7 @@ def curves_intersect(contour_list):
         # on to C, we won't catch it.
         ok_to_intersect_at_ends = frozenset({piece1, piece2}) in adjacent_pairs
         if curve_pieces_intersect(piece1, piece2, ok_to_intersect_at_ends):
-            return "intersection %s and %s" % (piece1, piece2)
+            return f"intersection {piece1} and {piece2}"
 
     return None
 
@@ -350,9 +340,7 @@ def font_version(font):
 def printable_font_revision(font, accuracy=2):
     font_revision = font["head"].fontRevision
     font_revision_int = int(font_revision)
-    font_revision_frac = int(
-        round((font_revision - font_revision_int) * 10**accuracy)
-    )
+    font_revision_frac = int(round((font_revision - font_revision_int) * 10**accuracy))
 
     font_revision_int = str(font_revision_int)
     font_revision_frac = str(font_revision_frac).zfill(accuracy)
@@ -371,7 +359,7 @@ def printable_font_versions(font):
             return version
     else:
         font_revision = printable_font_revision(font, 3)
-    return "%s (head fontRevision: %s)" % (version, font_revision)
+    return f"{version} (head fontRevision: {font_revision})"
 
 
 def _build_cmap_dict(filename):
@@ -467,7 +455,7 @@ def get_font_properties_with_fallback(file_path, phase):
         return props, "" if props.script else "script"
 
     basename = path.basename(file_path)
-    if not basename in HARD_CODED_FONT_INFO:
+    if basename not in HARD_CODED_FONT_INFO:
         return None, None
 
     style, script, ui, weight = HARD_CODED_FONT_INFO[basename]
@@ -519,9 +507,7 @@ def check_font(
           filepath,family,style,script,variant,width,weight,slope,fmt,
           manufacturer,license_type,is_hinted,is_mono,is_UI,is_UI_metrics,
           is_display,is_cjk,subset
-      """.split(
-            ","
-        )
+      """.split(",")
         vals = [getattr(font_props, p.strip()) for p in fields]
         return noto_fonts.NotoFont(*vals)
 
@@ -709,7 +695,11 @@ def check_font(
                         % (keyname, actual, xre, expected),
                     )
         elif actual:
-            warn(test_key, keyname, "Expected no %s, but got '%s'" % (keyname, actual))
+            warn(
+                test_key,
+                keyname,
+                f"Expected no {keyname}, but got '{actual}'",
+            )
 
     def check_name_table():
         if not tests.check("name"):
@@ -770,7 +760,7 @@ def check_font(
 
         major_version = match.group(1)
         minor_version = match.group(2)
-        version_string = "%s.%s" % (major_version, minor_version)
+        version_string = f"{major_version}.{minor_version}"
         if (0 <= int(major_version) <= 65535) and (0 <= int(minor_version) <= 65535):
             accuracy = len(minor_version)
             font_revision = printable_font_revision(font, accuracy)
@@ -905,7 +895,7 @@ def check_font(
                 warn(
                     "cmap/tables/format_12_has_bmp",
                     "cmap",
-                    "'cmap' has a format 12 subtable but no " "non-BMP characters.",
+                    "'cmap' has a format 12 subtable but no non-BMP characters.",
                 )
 
             # format 4 table should be a subset of the format 12 one
@@ -1045,7 +1035,7 @@ def check_font(
 
         for cp in sorted(cps_with_variants):
             for sel, varcp, _ in sorted(unicode_data.get_variant_data(cp)):
-                if not sel in vs_cmap.uvsDict:
+                if sel not in vs_cmap.uvsDict:
                     warn(
                         "cmap/variants",
                         "Variants",
@@ -1063,7 +1053,9 @@ def check_font(
                     warn(
                         "cmap/variants",
                         "Variants",
-                        "Char %04x has no variant for selector %04x." % (cp, sel),
+                        "Char {:04x} has no variant for selector {:04x}.".format(
+                            cp, sel
+                        ),
                         check_test=False,
                     )
                     continue
@@ -1271,7 +1263,6 @@ def check_font(
             OS2_SEL_BOLD_MASK = 1 << 5
             OS2_SEL_REGULAR_MASK = 1 << 6
             OS2_SEL_USE_TYPO_METRICS_MASK = 1 << 7
-            OS2_SEL_WWS_MASK = 1 << 8
             if os2_table.fsSelection & OS2_SEL_REGULAR_MASK:
                 if os2_table.fsSelection & OS2_SEL_ITALIC_MASK:
                     warn(
@@ -1387,7 +1378,7 @@ def check_font(
         glyph_set = font.getGlyphSet()
         for glyph_index in range(len(glyf_table.glyphOrder)):
             glyph_name = glyf_table.glyphOrder[glyph_index]
-            glyph = glyf_table[glyph_name]
+            glyf_table[glyph_name]
             # Compute the ink's yMin and yMax
 
             ttglyph = glyph_set[glyph_name]
@@ -1768,7 +1759,7 @@ def check_font(
             if isinstance(params, otTables.FeatureParamsStylisticSet):
                 if not name_id_set:
                     name_id_set = {r.nameID for r in font["name"].names}
-                if not params.UINameID in name_id_set:
+                if params.UINameID not in name_id_set:
                     warn(
                         "complex/%s/ui_name_id" % gsub_or_gpos,
                         GSUB_OR_GPOS,
@@ -1842,7 +1833,7 @@ def check_font(
             for src, context, res in errors:
                 srctext = " ".join("%04x" % ord(cp) for cp in src)
                 ctx = (" (%s)" % context) if context else ""
-                erroritems.append("%s%s: %s" % (srctext, ctx, res))
+                erroritems.append(f"{srctext}{ctx}: {res}")
             errorinfo = ", ".join(erroritems)
             warn(
                 "complex/gsub/variants",
@@ -1996,7 +1987,7 @@ def check_font(
                     )
 
     def check_hints():
-        if not "glyf" in font:
+        if "glyf" not in font:
             return
 
         if not tests.check("hints"):
@@ -2186,7 +2177,7 @@ def check_font(
                     )
 
     def check_stems(cmap):
-        if not "glyf" in font:
+        if "glyf" not in font:
             return
 
         if not tests.check("stem"):
@@ -2498,7 +2489,7 @@ def main():
                 font_file_path, phase=arguments.phase
             )
             if filename_error:
-                print("#Error for %s: %s" % (font_file_path, filename_error))
+                print(f"#Error for {font_file_path}: {filename_error}")
             else:
                 write_font_props(font_props)
         return

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 #
 # Copyright 2014 Google Inc. All rights reserved.
 #
@@ -38,8 +38,8 @@ class UnicodeDataTest(unittest.TestCase):
     def test_canonical_decomposition(self):
         """Tests the canonical_decomposition() method."""
         self.assertEqual("", unicode_data.canonical_decomposition(0x0627))
-        self.assertEqual("\u064A\u0654", unicode_data.canonical_decomposition(0x0626))
-        self.assertEqual("\U000226D4", unicode_data.canonical_decomposition(0x2F8A4))
+        self.assertEqual("\u064a\u0654", unicode_data.canonical_decomposition(0x0626))
+        self.assertEqual("\U000226d4", unicode_data.canonical_decomposition(0x2F8A4))
 
     def test_script(self):
         """Tests the script() method."""
@@ -59,7 +59,7 @@ class UnicodeDataTest(unittest.TestCase):
         """Tests the is_defined() method."""
         self.assertTrue(unicode_data.is_defined(0x20BD))
         self.assertFalse(unicode_data.is_defined(0xFDD0))
-        self.assertFalse(unicode_data.is_defined(0x088F))
+        self.assertFalse(unicode_data.is_defined(0x0870))
         # CJK ranges
         self.assertTrue(unicode_data.is_defined(0x3400))
         self.assertTrue(unicode_data.is_defined(0x4DB5))

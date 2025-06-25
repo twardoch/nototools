@@ -67,7 +67,7 @@ def printable_glyph_list(glyph_list, quote=False):
 def dump_lang_sys(script, lang, lang_sys):
     """Dumps a language system."""
     print(
-        "%s %s:" % (script, lang),
+        f"{script} {lang}:",
     )
     assert lang_sys.LookupOrder is None
     if lang_sys.ReqFeatureIndex != 65535:
@@ -119,7 +119,7 @@ def print_contextual_substitution(backtrack, center, lookahead, subs, reverse=Fa
     for coverage in lookahead:
         glyphs = extract_glyphs_from_coverage(coverage)
         output_list.append(printable_glyph_class(glyphs))
-    print_indented("%s %s;" % (rule_name, " ".join(output_list)))
+    print_indented("{} {};".format(rule_name, " ".join(output_list)))
 
 
 def dump_gsub_subtable(lookup_type, subtable):
@@ -134,11 +134,11 @@ def dump_gsub_subtable(lookup_type, subtable):
 
     if lookup_type == 1:
         for key in sorted(subtable.mapping.keys()):
-            print_indented("sub %s by %s;" % (key, subtable.mapping[key]))
+            print_indented(f"sub {key} by {subtable.mapping[key]};")
 
     elif lookup_type == 2:
         for key, value in sorted(subtable.mapping.items()):
-            print_indented("sub %s by %s;" % (key, " ".join(value)))
+            print_indented("sub {} by {};".format(key, " ".join(value)))
 
     elif lookup_type == 3:
         for key in sorted(subtable.alternates.keys()):
@@ -290,7 +290,7 @@ def dump_bases(glyphs, records, printable_function):
     index = 0
     for glyph in glyphs:
         record = records[index]
-        print_indented("%s: %s" % (glyph, printable_function(record)), indents=2)
+        print_indented(f"{glyph}: {printable_function(record)}", indents=2)
         index += 1
 
 
@@ -529,7 +529,7 @@ def main():
     """Dump the OpenType Layout tables for all input arguments."""
     for font_file_name in sys.argv[1:]:
         font = ttLib.TTFont(font_file_name)
-        print("%s: %s" % (font_file_name, internal_font_name(font)))
+        print(f"{font_file_name}: {internal_font_name(font)}")
         dump_otl_table(font, "GPOS")
         dump_otl_table(font, "GSUB")
 

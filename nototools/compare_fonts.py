@@ -18,16 +18,15 @@
 inspiration."""
 
 import argparse
-from os import path
 import re
-
-from fontTools import ttLib
+from os import path
 
 import cldr_data
 import font_data
 import lint_config
 import render
 import unicode_data
+from fontTools import ttLib
 
 name_re = re.compile(r"(.+)-(.*)\.ttf")
 
@@ -76,7 +75,7 @@ def _get_class_defs(font):
         return None
 
 
-class FontCompare(object):
+class FontCompare:
     test_names = frozenset(["cmap", "advance", "hhea", "OS/2", "bounds", "gdef"])
 
     @staticmethod
@@ -84,7 +83,6 @@ class FontCompare(object):
         if not test_list:
             return FontCompare.test_names
 
-        enabled_tests = None
         failed = False
         for test in test_list:
             if test not in FontCompare.test_names:
@@ -412,7 +410,7 @@ class FontCompare(object):
 
         differences = []
         for cp in mark_glyphs:
-            if not cp in self.test_cmap:
+            if cp not in self.test_cmap:
                 continue
             target_glyph = self.target_cmap[cp]
             test_glyph = self.test_cmap[cp]
@@ -462,7 +460,7 @@ class FontCompare(object):
 
         differences = []
         for cp in self.target_chars:
-            if not cp in self.test_cmap:
+            if cp not in self.test_cmap:
                 continue
             target_glyph = self.target_cmap[cp]
             test_glyph = self.test_cmap[cp]
@@ -618,7 +616,7 @@ def check_fonts(
 
         if not path.isfile(target_path):
             raise ValueError(
-                "could not find %s in target dir %s" % (target_name, target_dir)
+                f"could not find {target_name} in target dir {target_dir}"
             )
 
         check_font(

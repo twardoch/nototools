@@ -20,9 +20,7 @@ import argparse
 import collections
 import sys
 
-from nototools import cmap_data
-from nototools import lint_config
-from nototools import noto_fonts
+from nototools import cmap_data, lint_config, noto_fonts
 
 
 def report_set_differences(name_to_cpset, out=sys.stderr):
@@ -70,8 +68,8 @@ def font_cmap_data(paths):
         return (
             not font.subset
             and not font.fmt == "ttc"
-            and not font.script in {"CJK", "HST"}
-            and not font.family in {"Arimo", "Cousine", "Tinos"}
+            and font.script not in {"CJK", "HST"}
+            and font.family not in {"Arimo", "Cousine", "Tinos"}
         )
 
     if not paths:

@@ -25,11 +25,10 @@ accumulate a report between method calls (yet?). They simply report the
 differences via a returned string.
 """
 
-
-from collections import defaultdict
 import re
 import subprocess
 import tempfile
+from collections import defaultdict
 
 
 class GposDiffFinder:
@@ -59,7 +58,7 @@ class GposDiffFinder:
 
         unmatched = defaultdict(list)
         mismatched = defaultdict(list)
-        rx = re.compile("pos \[?([\w\d@_.]+)\]? \[?([\w\d@_.]+)\]? (-?\d+);")
+        rx = re.compile(r"pos \[?([\w\d@_.]+)\]? \[?([\w\d@_.]+)\]? (-?\d+);")
         self._parse_kerning(rx, "-", self.text_a, classes_a, unmatched)
         self._parse_kerning(rx, "+", self.text_b, classes_b, unmatched)
         self._organize_kerning_diffs(unmatched, mismatched)
@@ -73,7 +72,7 @@ class GposDiffFinder:
         # 3. Right-side glyph name
         unmatched.sort(key=lambda t: (-max(abs(v) for v in t[1]), t[0][1], t[0][2]))
         for (sign, left, right), vals in unmatched[: self.out_lines]:
-            res.append("%s pos %s %s %s" % (sign, left, right, vals))
+            res.append(f"{sign} pos {left} {right} {vals}")
         res.append("")
 
         mismatched = [(k, v) for k, v in mismatched.items() if any(v)]
@@ -92,7 +91,7 @@ class GposDiffFinder:
         )
         for (left, right), (vals1, vals2) in mismatched[: self.out_lines]:
             if sum(abs(v1 - v2) for v1, v2 in zip(vals1, vals2)) > self.err:
-                res.append("pos %s %s: %s vs %s" % (left, right, vals1, vals2))
+                res.append(f"pos {left} {right}: {vals1} vs {vals2}")
         res.append("")
         return "\n".join(res)
 
@@ -102,7 +101,7 @@ class GposDiffFinder:
         unmatched = {}
         mismatched = {}
         rx = re.compile(
-            "mark \[([\w\d\s@_.]+)\] <anchor (-?\d+) (-?\d+)> " "(@[\w\d_.]+);"
+            r"mark \[([\w\d\s@_.]+)\] <anchor (-?\d+) (-?\d+)> " r"(@[\w\d_.]+);"
         )
         self._parse_anchor_info(rx, "-", self.text_a, unmatched, mismatched)
         self._parse_anchor_info(rx, "+", self.text_b, unmatched, mismatched)
@@ -146,8 +145,8 @@ class GposDiffFinder:
         unmatched = {}
         mismatched = {}
         rx = re.compile(
-            "pos %s \[([\w\d\s@_.]+)\]\s+<anchor (-?\d+) (-?\d+)> "
-            "mark (@?[\w\d_.]+);" % mark_type
+            r"pos %s \[([\w\d\s@_.]+)\]\s+<anchor (-?\d+) (-?\d+)> "
+            r"mark (@?[\w\d_.]+);" % mark_type
         )
         self._parse_anchor_info(rx, "-", self.text_a, unmatched, mismatched)
         self._parse_anchor_info(rx, "+", self.text_b, unmatched, mismatched)

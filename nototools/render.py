@@ -22,9 +22,9 @@ import json
 import os
 import subprocess
 
-from nototools import font_caching
-
 from fontTools.pens.boundsPen import BoundsPen
+
+from nototools import font_caching
 
 
 def min_with_none(first, second):
@@ -86,9 +86,9 @@ def get_glyph_cleaned_extents_OLD(glyph, glyf_table):
 
                 if hasattr(component, "transform"):
                     transform = component.transform
-                    assert (
-                        transform[1][0] == transform[0][1] == 0
-                    ), "Can't handle complex transforms"
+                    assert transform[1][0] == transform[0][1] == 0, (
+                        "Can't handle complex transforms"
+                    )
                 else:
                     transform = [[1, 0], [0, 1]]
                 max_height = max_with_none(
@@ -193,7 +193,7 @@ def test_text_vertical_extents(
 
     split_text = text.split("\n")
     exceeding_lines = []
-    for line_no, output_line in enumerate((hb_output.split(b"\n"))):
+    for line_no, output_line in enumerate(hb_output.split(b"\n")):
         if not output_line:
             continue
 

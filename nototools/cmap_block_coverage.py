@@ -19,9 +19,7 @@
 import argparse
 import collections
 
-from nototools import cmap_data
-from nototools import unicode_data
-from nototools import tool_utils
+from nototools import cmap_data, tool_utils, unicode_data
 
 _MISSING_SCRIPTS = frozenset(["<MISSING>"])
 _OMITTED_SCRIPTS = frozenset(["(omitted)"])
@@ -128,7 +126,7 @@ def _list_range(
     details,
 ):
     if limit_cp != start_cp + 1:
-        range_text = "%04x-%04x" % (start_cp, limit_cp - 1)
+        range_text = f"{start_cp:04x}-{limit_cp - 1:04x}"
     else:
         range_text = "%04x" % start_cp
 
@@ -304,7 +302,7 @@ def main():
     parser.add_argument(
         "-d",
         "--details",
-        help="show details on N characters in each range" " (3 if no value provided)",
+        help="show details on N characters in each range (3 if no value provided)",
         metavar="num",
         default=0,
         const=3,

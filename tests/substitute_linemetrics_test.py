@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os.path
-import unittest
 import tempfile
-import hashlib
+import unittest
 
 from fontTools.ttLib import TTFont
+
 import nototools.substitute_linemetrics
 
 
@@ -41,9 +41,9 @@ class LineMetricsTest(unittest.TestCase):
         font2 = TTFont(self.fontfile2)
         output = TTFont(self.output_file)
 
-        assert dump_linemetrics(font1) != dump_linemetrics(
-            font2
-        ), "linemetrics for the two test fonts should be different."
+        assert dump_linemetrics(font1) != dump_linemetrics(font2), (
+            "linemetrics for the two test fonts should be different."
+        )
 
         self.assertEqual(dump_linemetrics(font2), dump_linemetrics(output))
 

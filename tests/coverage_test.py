@@ -18,13 +18,12 @@
 
 __author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
-import os
-from os import path
 import tempfile
 import unittest
 
-from nototools import coverage
 from hb_input_test import make_font
+
+from nototools import coverage
 
 
 class CharacterSetTest(unittest.TestCase):

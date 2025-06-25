@@ -22,8 +22,6 @@ differences from all pairs are shown first. For GPOS the pairs are still
 compared separately.
 """
 
-from __future__ import print_function
-
 import argparse
 import glob
 import logging
@@ -164,7 +162,7 @@ def main():
         "--font-size",
         type=int,
         default=128,
-        help='if DIFF_TYPE is "rendered", size to render ' "samples at (default 128)",
+        help='if DIFF_TYPE is "rendered", size to render samples at (default 128)',
     )
     parser.add_argument(
         "--render-path",

@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # with open("README.rst", 'r') as readme_file:
 #    readme = readme_file.read()
@@ -32,9 +31,18 @@ setup(
     ],
     extras_require={
         # optional requirements for nototools.shape_diff module
-        "shapediff": ["booleanOperations", "defcon", "Pillow",],
+        "shapediff": [
+            "booleanOperations",
+            "defcon",
+            "Pillow",
+        ],
     },
-    package_data={"nototools": ["*.sh", "data/*",]},
+    package_data={
+        "nototools": [
+            "*.sh",
+            "data/*",
+        ]
+    },
     # $ grep "def main(" nototools/* | cut -d: -f1
     scripts=[
         "nototools/autofix_for_release.py",

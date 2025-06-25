@@ -42,15 +42,10 @@ import argparse
 import collections
 import sys
 
+from nototools import (cldr_data, cmap_data, collect_cldr_punct,
+                       compare_cmap_data, noto_data, opentype_data, tool_utils,
+                       unicode_data)
 from nototools.py23 import unichr
-from nototools import cldr_data
-from nototools import cmap_data
-from nototools import compare_cmap_data
-from nototools import collect_cldr_punct
-from nototools import noto_data
-from nototools import opentype_data
-from nototools import tool_utils
-from nototools import unicode_data
 
 _MERGED_SCRIPTS_BY_TARGET = {
     "CJK": "Bopo Hang Hani Hans Hant Hira Jpan Kana Kore".split(),
@@ -67,7 +62,7 @@ def _invert_script_to_chars(script_to_chars):
     return char_to_scripts
 
 
-class CmapOps(object):
+class CmapOps:
     def __init__(
         self,
         script_to_chars=None,
@@ -163,7 +158,7 @@ class CmapOps(object):
             self._error("script %s is not empty, cannot delete" % script)
 
     def _cp_info(self, cp):
-        return "%04X (%s)" % (cp, unicode_data.name(cp, "<unnamed>"))
+        return "{:04X} ({})".format(cp, unicode_data.name(cp, "<unnamed>"))
 
     def _script_ok_add(self, cp, script):
         if unicode_data.is_defined(cp) or cp in self._undefined_exceptions:
@@ -337,13 +332,13 @@ def _build_block_to_primary_script():
             max_script = "EXCL"  # exclude
         elif float(max_script_count) / num < 0.8:
             info = sorted(script_counts.items(), key=lambda t: (-t[1], t[0]))
-            block_info = "%s %s" % (block, ", ".join("%s/%d" % t for t in info))
+            block_info = "{} {}".format(block, ", ".join("%s/%d" % t for t in info))
             if block in assigned_primaries:
                 max_script = assigned_primaries[block]
                 # print('assigning primary', block_info, '->', max_script)
             else:
                 print(
-                    "ERROR: no inherited primary\n %s\n %s\n" % (block, block_info),
+                    f"ERROR: no inherited primary\n {block}\n {block_info}\n",
                     file=sys.stderr,
                 )
                 max_script = None
@@ -352,7 +347,7 @@ def _build_block_to_primary_script():
                 max_script = inherited_primaries[block]
             else:
                 print(
-                    "ERROR: no inherited primary\n %s\n %s\n" % (block, block_info),
+                    f"ERROR: no inherited primary\n {block}\n {block_info}\n",
                     file=sys.stderr,
                 )
                 max_script = None
@@ -458,7 +453,7 @@ def _reassign_scripts(cmap_ops, scripts, new_script):
     cmap_ops.phase("reassign scripts")
     cmap_ops.ensure_script(new_script)
     for script in sorted(scripts):
-        cmap_ops.phase("reassign %s to %s" % (script, new_script))
+        cmap_ops.phase(f"reassign {script} to {new_script}")
         for cp in cmap_ops.script_chars(script):
             cmap_ops.remove(cp, script)
             cmap_ops.add(cp, new_script)
@@ -555,14 +550,12 @@ def _reassign_common_by_block(cmap_ops):
             cmap_ops.add(cp, new_script)
         else:
             sys.stderr.write(
-                "  could not assign %04x %s\n" % (cp, unicode_data.name(cp))
+                f"  could not assign {cp:04x} {unicode_data.name(cp)}\n"
             )
 
     if len(used_assignments) != len(block_assignments):
         sys.stderr.write("ERROR: some block assignments unused\n")
-        unused = set(
-            [block for block in block_assignments if block not in used_assignments]
-        )
+        unused = {block for block in block_assignments if block not in used_assignments}
         for block in unicode_data.block_names():
             if block in unused:
                 sys.stderr.write("  %s\n" % block)
@@ -963,7 +956,7 @@ def _generate_script_extra(script_to_chars):
                 if cp_block != block:
                     block = cp_block
                     print("  # %s" % block)
-                print("  %04X # %s" % (cp, name))
+                print(f"  {cp:04X} # {name}")
                 chars.add(cp)
         if block is not None:
             print('  """),')
@@ -2701,7 +2694,7 @@ def _regen_script_required():
             except KeyError:
                 pass
             script_name = script_name.replace(unichr(0x2019), "'")
-        print("  # %s - %s" % (script, script_name))
+        print(f"  # {script} - {script_name}")
         if script in script_to_comment_and_data:
             print("  ('%s'," % script)
             lines = []
@@ -2722,7 +2715,7 @@ def _regen_script_required():
                     block = cp_block
                     lines.append("# " + block)
                 cp_name = unicode_data.name(cp, "<unnamed>")
-                lines.append("%04X  # %s" % (cp, cp_name))
+                lines.append(f"{cp:04X}  # {cp_name}")
             lines.append('"""),')
             print("\n   ".join(lines))
         print()
@@ -2838,7 +2831,7 @@ def _assign_bidi_mirroring(cmap_ops):
         mirrored_in_script = cps & mirrored
         if not mirrored_in_script:
             continue
-        sibs = set(unicode_data.bidi_mirroring_glyph(cp) for cp in mirrored_in_script)
+        sibs = {unicode_data.bidi_mirroring_glyph(cp) for cp in mirrored_in_script}
         missing_sibs = sibs - mirrored_in_script
         if missing_sibs:
             cmap_ops.log("adding %d missing bidi chars" % len(missing_sibs))
@@ -3009,7 +3002,7 @@ def _assign_symbols_from_groups(cmap_ops):
     and symbols blocks are themselves mixed)."""
 
     cmap_ops.phase("assign symbols from groups")
-    with open("codepoint_groups.txt", "r") as f:
+    with open("codepoint_groups.txt") as f:
         for lineix, line in enumerate(f):
             ix = line.find("#")
             if ix >= 0:
@@ -3120,7 +3113,7 @@ def _assign_math(cmap_ops):
     cmap_ops.phase("assign math")
 
     # We keep this here for awhile for reference, but no longer use it.
-    STIX_CPS = tool_utils.parse_int_ranges(
+    tool_utils.parse_int_ranges(
         """
       0020-007e 00a0-0180 0188 0190 0192 0195 0199-019b 019e 01a0-01a1 01a5
       01aa-01ab 01ad 01af-01b0 01b5 01ba-01bb 01be 01c0-01c3 01f0 01fa-01ff
@@ -3352,7 +3345,7 @@ def _merge_fallback_chars(script_to_chars, srcfile):
             else:
                 xcmap = None  # not a tuple, so probably no fallback data
         else:
-            sys.stderr.write("no script %s found in %s\n" % (script, srcfile))
+            sys.stderr.write(f"no script {script} found in {srcfile}\n")
         merged_cmap[script] = (cmap, xcmap)
     return merged_cmap
 
@@ -3385,7 +3378,7 @@ def main():
     parser.add_argument(
         "-o",
         "--outfile",
-        help='name of cmap file to output ("%s" if name ' "omitted)" % DEFAULT_OUTFILE,
+        help='name of cmap file to output ("%s" if name omitted)' % DEFAULT_OUTFILE,
         metavar="file",
         nargs="?",
         default=None,

@@ -21,14 +21,12 @@ __author__ = "roozbeh@google.com (Roozbeh Pournader)"
 import argparse
 import array
 import os
-from os import path
 import re
+from os import path
 
 from fontTools import ttLib
 
-from nototools import font_data
-from nototools import notoconfig
-
+from nototools import font_data, notoconfig
 
 NOTO_URL = "http://www.google.com/get/noto/"
 
@@ -321,7 +319,7 @@ def fix_font(src_root, dst_root, file_path, is_hinted, save_unmodified):
 
     fixed_path = fix_path(file_path, is_hinted)
     if fixed_path != file_path:
-        print('changed file_path from "%s" to "%s"' % (file_path, fixed_path))
+        print(f'changed file_path from "{file_path}" to "{fixed_path}"')
         modified = True
 
     if not modified:
@@ -359,7 +357,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "name_pat",
-        help="regex for files to fix, " "searches relative path from src root",
+        help="regex for files to fix, searches relative path from src root",
     )
     parser.add_argument(
         "--src_root",

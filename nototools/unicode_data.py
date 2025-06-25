@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-#
 # Copyright 2014 Google Inc. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,17 +22,15 @@ edge version of the Unicode Standard not yet published, so it is expected to
 be unstable and sometimes inconsistent.
 """
 
-__author__ = (
-    "roozbeh@google.com (Roozbeh Pournader) and " "cibu@google.com (Cibu Johny)"
-)
+__author__ = "roozbeh@google.com (Roozbeh Pournader) and cibu@google.com (Cibu Johny)"
 
 import codecs
 import collections
 import os
-from os import path
 import re
+from os import path
 
-from nototools.py23 import unichr, unicode, basestring
+from nototools.py23 import basestring, unichr, unicode
 
 try:
     import unicodedata2 as unicodedata  # Unicode 8 compliant native lib
@@ -134,7 +131,7 @@ def name(char, *args):
     # CJK and Hangul automatic names
     try:
         return unicodedata.name(char)
-    except ValueError as val_error:
+    except ValueError:
         cp = ord(char)
         load_data()
         if cp in _character_names_data:
@@ -149,7 +146,7 @@ def name(char, *args):
 
 def _char_to_int(char):
     """Converts a potential character to its scalar value."""
-    if type(char) in [str, type("")]:
+    if type(char) in [str, str]:
         return ord(char)
     else:
         return char
@@ -797,7 +794,7 @@ def _read_emoji_data(lines):
             continue
         m = line_re.match(line)
         if not m:
-            raise ValueError('"%s" Did not match "%s"' % (line_re.pattern, line))
+            raise ValueError(f'"{line_re.pattern}" Did not match "{line}"')
 
         # group 1 is a sequence, group 2 is a range of single character sequences.
         # we can't process the range because we don't have a name for each character
@@ -1454,7 +1451,7 @@ def _load_unicode_emoji_variants():
             "skipped %s %d proposed variants"
             % ("all of" if skipped == read else skipped, read)
         )
-    except IOError as e:
+    except OSError as e:
         if e.errno != 2:
             raise
 
@@ -1578,7 +1575,7 @@ def _load_proposed_emoji_data():
                     )
 
                 _proposed_emoji_data[cp] = name
-    except IOError as e:
+    except OSError as e:
         if e.errno != 2:
             # not file not found, rethrow
             raise
@@ -1621,7 +1618,7 @@ def codeset(cpname):
     )
     if not path.isfile(filepath):
         return None
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         return read_codeset(f.read())
 
 
@@ -1673,7 +1670,9 @@ def _load_nameslist_data():
                 m = see_also_re.match(val)
                 if not m:
                     raise Exception(
-                        'could not match see also val "%s" in line "%s"' % (val, line)
+                        'could not match see also val "{}" in line "{}"'.format(
+                            val, line
+                        )
                     )
                 ref_cp = int(m.group(1) or m.group(2), 16)
                 _nameslist_see_also[cp].add(ref_cp)
@@ -1699,7 +1698,7 @@ def _load_namealiases_data():
             cp = int(m.group(1), 16)
             name = m.group(2).strip()
             name_type = m.group(3).strip()
-            if not name_type in [
+            if name_type not in [
                 "correction",
                 "control",
                 "alternate",

@@ -1,13 +1,5 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from math import atan2, floor, hypot, pi, sin, sqrt
 
-from math import hypot
-from math import floor
-from math import sqrt
-from math import atan2
-from math import sin
-from math import pi
 import cornu
 
 
@@ -24,8 +16,8 @@ def compute_dth(k0, k1):
     elif k1 == 0:
         return 0
     sqrk1 = sqrt(2 * k1)
-    t0 = (k0 - .5 * k1) / sqrk1
-    t1 = (k0 + .5 * k1) / sqrk1
+    t0 = (k0 - 0.5 * k1) / sqrk1
+    t1 = (k0 + 0.5 * k1) / sqrk1
     (y0, x0) = cornu.eval_cornu(t0)
     (y1, x1) = cornu.eval_cornu(t1)
     chord_th = atan2(y1 - y0, x1 - x0)
@@ -37,10 +29,10 @@ def compute_chord(k0, k1):
         if k0 == 0:
             return 1
         else:
-            return sin(k0 * .5) / (k0 * .5)
+            return sin(k0 * 0.5) / (k0 * 0.5)
     sqrk1 = sqrt(2 * abs(k1))
-    t0 = (k0 - .5 * k1) / sqrk1
-    t1 = (k0 + .5 * k1) / sqrk1
+    t0 = (k0 - 0.5 * k1) / sqrk1
+    t1 = (k0 + 0.5 * k1) / sqrk1
     (y0, x0) = cornu.eval_cornu(t0)
     (y1, x1) = cornu.eval_cornu(t1)
     return hypot(y1 - y0, x1 - x0) / abs(t1 - t0)
@@ -69,7 +61,11 @@ def solve_clothoid(th0, th1, verbose=False):
     for i in range(10):
         if abs(error) < 1e-9:
             break
-        k1_old, error_old, k1 = k1, error, k1 + (k1_old - k1) * error / (error - error_old)
+        k1_old, error_old, k1 = (
+            k1,
+            error,
+            k1 + (k1_old - k1) * error / (error - error_old),
+        )
         error = (th1 - th0) - compute_dth(k0, k1)
         if verbose:
             print(k0, k1, error)
@@ -77,5 +73,5 @@ def solve_clothoid(th0, th1, verbose=False):
     return k0, k1
 
 
-if __name__ == '__main__':
-    print(solve_clothoid(.06, .05, True))
+if __name__ == "__main__":
+    print(solve_clothoid(0.06, 0.05, True))

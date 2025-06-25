@@ -19,13 +19,12 @@ __author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
 import argparse
 import codecs
-from os import path
 import re
+from os import path
 
 from fontTools import ttLib
 
-from nototools import unicode_data
-from nototools import lint_config
+from nototools import lint_config, unicode_data
 from nototools.py23 import unichr
 
 
@@ -77,7 +76,7 @@ def _print_char_info(chars):
             name = unicode_data.name(char)
         except ValueError:
             name = "<Unassigned>"
-        print("U+%04X %s" % (char, name))
+        print(f"U+{char:04X} {name}")
 
 
 def _write_char_text(chars, filepath, chars_per_line, sep):
@@ -142,7 +141,7 @@ def main():
     )
     parser.add_argument(
         "--limit",
-        help="string of hex codepoint ranges limiting cmap " "to output",
+        help="string of hex codepoint ranges limiting cmap to output",
         metavar="ranges",
     )
     args = parser.parse_args()

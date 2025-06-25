@@ -17,13 +17,12 @@
 import argparse
 import collections
 import os
-from os import path
 import re
-from nototools import unicode_data
-import xml.etree.cElementTree as ElementTree
+import xml.etree.ElementTree as ElementTree
+from os import path
 
+from nototools import extra_locale_data, unicode_data
 from nototools.py23 import unichr, unicode
-from nototools import extra_locale_data
 
 TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 CLDR_DIR = path.join(TOOLS_DIR, "third_party", "cldr")
@@ -191,7 +190,7 @@ def _parse_supplemental_data():
                 if len(lang_scripts) == 1:
                     replacement = {script}
                     if _DEBUG:
-                        print("replacing %s with %s" % (lang_scripts, replacement))
+                        print(f"replacing {lang_scripts} with {replacement}")
                     _LANG_TO_SCRIPTS[lang] = replacement
                 else:
                     _LANG_TO_SCRIPTS[lang].add(script)
@@ -279,7 +278,7 @@ def get_likely_subtags(lang_tag):
                 if _DEBUG:
                     print("regex did not match locale '%s'" % loc_tag)
                 return result
-            lang = m.group(1)
+            m.group(1)
             script = m.group(2)
             region = m.group(3)
             variant = m.group(4)
@@ -364,7 +363,7 @@ def _get_language_name_from_file(language, cldr_file_path):
     data_file = path.join(CLDR_DIR, cldr_file_path)
     try:
         root = ElementTree.parse(data_file).getroot()
-    except IOError:
+    except OSError:
         _LANGUAGE_NAME_FROM_FILE_CACHE[cache_key] = None
         return None
 
@@ -481,7 +480,7 @@ def get_english_language_name(lang_scr):
             lang, script = lang_scr.split("-")
             try:
                 langName = _ENGLISH_LANGUAGE_NAMES[lang]
-                name = "%s (%s script)" % (langName, _ENGLISH_SCRIPT_NAMES[script])
+                name = f"{langName} ({_ENGLISH_SCRIPT_NAMES[script]} script)"
                 return name
             except KeyError:
                 pass
@@ -582,7 +581,7 @@ def get_exemplar_from_file(cldr_file_path, types=[""]):
     data_file = path.join(CLDR_DIR, cldr_file_path)
     try:
         root = ElementTree.parse(data_file).getroot()
-    except IOError:
+    except OSError:
         _exemplar_from_file_cache[cldr_file_path] = None
         return None
 
@@ -592,7 +591,7 @@ def get_exemplar_from_file(cldr_file_path, types=[""]):
             typeval = tag.attrib["type"]
         else:
             typeval = ""
-        if not typeval in types:
+        if typeval not in types:
             continue
         # TODO(dougfelt): when multiple types are used, append in fixed order
         # and don't rely on order in the xml file?
@@ -602,11 +601,11 @@ def get_exemplar_from_file(cldr_file_path, types=[""]):
             def accept(s):
                 return len(s) > 1 or unicode_data.category(s)[0] in cat
 
-            exemplar_list = [
+            [
                 s for s in unicode_set_string_to_list(tag.text) if accept(s)
             ]
             exemplars.extend(unicode_set_string_to_list(tag.text))
-        except Exception as e:
+        except Exception:
             print("failed parse of %s" % cldr_file_path)
             raise
         break
@@ -807,7 +806,7 @@ def main():
         print("region to lang+script")
         regions = args.region_to_lang or sorted(known_regions())
         for r in regions:
-            print("%s (%s):" % (r, get_english_region_name(r)))
+            print(f"{r} ({get_english_region_name(r)}):")
             for ls in sorted(region_to_lang_scripts(r)):
                 print("  %s" % ls)
 
@@ -815,7 +814,7 @@ def main():
         print("lang to region")
         langs = args.lang_to_region or sorted(known_langs())
         for l in langs:
-            print("%s (%s):" % (l, get_english_language_name(l)))
+            print(f"{l} ({get_english_language_name(l)}):")
             for r in sorted(lang_to_regions(l)):
                 print("  %s" % r)
 
@@ -823,7 +822,7 @@ def main():
         print("lang to script")
         langs = args.lang_to_script or sorted(known_langs())
         for l in langs:
-            print("%s (%s):" % (l, get_english_language_name(l)))
+            print(f"{l} ({get_english_language_name(l)}):")
             for s in sorted(lang_to_scripts(l)):
                 print("  %s" % s)
 

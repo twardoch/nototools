@@ -16,21 +16,16 @@
 
 """Swat copyright, bump version."""
 
-
 import argparse
 import collections
 import os
-from os import path
 import re
+from os import path
 
-from nototools import autofix_for_release
-from nototools import cldr_data
-from nototools import font_data
-from nototools import noto_fonts
-from nototools import ttc_utils
+from fontTools import misc, ttLib
 
-from fontTools import ttLib
-from fontTools import misc
+from nototools import (autofix_for_release, cldr_data, font_data, noto_fonts,
+                       ttc_utils)
 
 _COPYRIGHT_ID = 0
 _VERSION_ID = 5
@@ -160,7 +155,7 @@ def get_bumped_version(ttfont, is_hinted=None):
     # bump the minor version keeping significant digits:
     new_minor_version = str(int(minor_version) + 1).zfill(accuracy)
     new_revision = major_version + "." + new_minor_version
-    print("Update revision from  '%s' to '%s'" % (expected_revision, new_revision))
+    print(f"Update revision from  '{expected_revision}' to '{new_revision}'")
     # double check we are going to properly round-trip this value
     float_revision = float(new_revision)
     fixed_revision = misc.fixedTools.floatToFixed(float_revision, 16)
@@ -217,7 +212,7 @@ def _swat_font(noto_font, dst_root, dry_run):
         print(e)
         return
 
-    print("%s: %s" % ("Would write" if dry_run else "Writing", dst_file))
+    print("{}: {}".format("Would write" if dry_run else "Writing", dst_file))
 
     new_trademark = "%s is a trademark of Google Inc." % noto_font.family
 
@@ -291,13 +286,13 @@ def _swat_font(noto_font, dst_root, dry_run):
     def update(name_id, new, newText=None):
         old = names.get(name_id)
         if new and (new != old):
-            if not dry_run and not "!!!" in new:
+            if not dry_run and "!!!" not in new:
                 font_data.set_name_record(ttfont, name_id, new, addIfMissing="win")
 
             label = _NAME_ID_LABELS[name_id]
             oldText = "'%s'" % old if old else "None"
             newText = newText or ("'%s'" % new)
-            print("%s:\n  old: %s\n  new: %s" % (label, oldText, newText or new))
+            print(f"{label}:\n  old: {oldText}\n  new: {newText or new}")
 
             label_change = _changes.get(label)
             if not label_change:

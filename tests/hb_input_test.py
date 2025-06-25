@@ -13,18 +13,15 @@
 # limitations under the License.
 
 
-from __future__ import print_function, unicode_literals
-
 import unittest
+from io import StringIO
 
+from fontTools import mtiLib
 from fontTools.agl import AGL2UV
 from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
-from fontTools import mtiLib
 from fontTools.pens.ttGlyphPen import TTGlyphPen
-from fontTools.ttLib import newTable, TTFont
+from fontTools.ttLib import TTFont, newTable
 from fontTools.ttLib.tables._c_m_a_p import cmap_format_4
-
-from io import StringIO
 
 from nototools.hb_input import HbInputGenerator
 
@@ -86,52 +83,22 @@ def make_font(feature_source, fea_type="fea"):
     font["head"] = head = newTable("head")
     head.tableVersion = 1.0
     head.fontRevision = 1.0
-    head.flags = (
-        head.checkSumAdjustment
-    ) = (
-        head.magicNumber
-    ) = (
-        head.created
-    ) = (
+    head.flags = head.checkSumAdjustment = head.magicNumber = head.created = (
         head.modified
-    ) = (
-        head.macStyle
-    ) = (
-        head.lowestRecPPEM
-    ) = (
-        head.fontDirectionHint
-    ) = (
+    ) = head.macStyle = head.lowestRecPPEM = head.fontDirectionHint = (
         head.indexToLocFormat
     ) = head.glyphDataFormat = head.xMin = head.xMax = head.yMin = head.yMax = 0
     head.unitsPerEm = 1000
 
     font["hhea"] = hhea = newTable("hhea")
     hhea.tableVersion = 0x00010000
-    hhea.ascent = (
-        hhea.descent
-    ) = (
-        hhea.lineGap
-    ) = (
-        hhea.caretSlopeRise
-    ) = (
+    hhea.ascent = hhea.descent = hhea.lineGap = hhea.caretSlopeRise = (
         hhea.caretSlopeRun
-    ) = (
-        hhea.caretOffset
-    ) = (
-        hhea.reserved0
-    ) = (
-        hhea.reserved1
-    ) = (
-        hhea.reserved2
-    ) = (
+    ) = hhea.caretOffset = hhea.reserved0 = hhea.reserved1 = hhea.reserved2 = (
         hhea.reserved3
-    ) = (
-        hhea.metricDataFormat
-    ) = (
-        hhea.advanceWidthMax
-    ) = (
-        hhea.xMaxExtent
-    ) = hhea.minLeftSideBearing = hhea.minRightSideBearing = hhea.numberOfHMetrics = 0
+    ) = hhea.metricDataFormat = hhea.advanceWidthMax = hhea.xMaxExtent = (
+        hhea.minLeftSideBearing
+    ) = hhea.minRightSideBearing = hhea.numberOfHMetrics = 0
 
     font["hmtx"] = hmtx = newTable("hmtx")
     hmtx.metrics = {}
@@ -149,11 +116,7 @@ def make_font(feature_source, fea_type="fea"):
     post.extraNames = []
     post.mapping = {}
     post.glyphOrder = glyph_order
-    post.italicAngle = (
-        post.underlinePosition
-    ) = (
-        post.underlineThickness
-    ) = (
+    post.italicAngle = post.underlinePosition = post.underlineThickness = (
         post.isFixedPitch
     ) = post.minMemType42 = post.maxMemType42 = post.minMemType1 = post.maxMemType1 = 0
 

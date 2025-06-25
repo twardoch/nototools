@@ -18,12 +18,10 @@
 
 import argparse
 import collections
-from os import path
 import struct
-import subprocess
+from os import path
 
 from fontTools.ttLib import TTFont
-from fontTools.ttLib.tables._n_a_m_e import table__n_a_m_e as NameTable
 from fontTools.ttLib.ttCollection import TTCollection
 
 from nototools import tool_utils
@@ -35,7 +33,7 @@ _EXTRACT_TOOL_PATH = "[afdko]/FDK/Tools/linux/otc2otf"
 _BUILD_TOOL_PATH = "[afdko]/FDK/Tools/linux/otf2otc"
 
 
-class TTCFile(object):
+class TTCFile:
     """Holds some information from the sfnt headers in a .ttc file.
 
     - fonts is a list of FontEntry objects, in order.  It holds
@@ -72,10 +70,8 @@ class TTCFile(object):
         limit = offset + _sfntHeaderSize
         version, num_tables = struct.unpack(_sfntHeader, data[offset:limit])[:2]
         if version == 0x10000:
-            version_str = "1.0"
             font_fmt = "ttf"
         elif version == 0x4F54544F:
-            version_str = "OTTO"
             font_fmt = "otf"
         else:
             raise ValueError("unrecognized sfnt version %x" % version)

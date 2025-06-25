@@ -21,13 +21,11 @@ Replicating the sample text they describe can be a bit tedious.  This
 lets you interactively search characters in the font by name to assemble
 a string and save it to a file."""
 
-from builtins import input
 import argparse
 import codecs
 
+from nototools import coverage, unicode_data
 from nototools.py23 import unichr
-from nototools import coverage
-from nototools import unicode_data
 
 
 def _help():
@@ -60,7 +58,7 @@ def _build_text(name_map, initial_text=""):
         if line == "dump":
             print("dump: '%s'" % text)
             for cp in text:
-                print("%06x %s" % (ord(cp), unicode_data.name(ord(cp))))
+                print(f"{ord(cp):06x} {unicode_data.name(ord(cp))}")
             continue
         if line == "clear":
             text = ""
@@ -143,7 +141,7 @@ def _get_char_names(charset):
             if not name or name == "<control>":
                 name = "%04x" % cp
             else:
-                name = "%04x %s" % (cp, name.lower())
+                name = f"{cp:04x} {name.lower()}"
             name_map[name] = cp
 
     return name_map

@@ -8,8 +8,8 @@ The name list is the same as that used to swat file versions."""
 
 import argparse
 import os
-from os import path
 import re
+from os import path
 
 from nototools import tool_utils
 
@@ -23,8 +23,8 @@ def _build_regex(names):
         else:
             prefix = name[:ix]
             suffix = name[ix + 1 :]
-            parts.append(r"%s-.*%s" % (prefix, suffix))
-    full_exp = "^(?:" + "|".join(parts) + ").*\.ttf$"
+            parts.append(fr"{prefix}-.*{suffix}")
+    full_exp = "^(?:" + "|".join(parts) + r").*\.ttf$"
     return re.compile(full_exp)
 
 
@@ -58,7 +58,7 @@ def _collect_names(names):
         if n[0] != "@":
             all_names.add(n)
             return
-        with open(n[1:], "r") as f:
+        with open(n[1:]) as f:
             lines = f.readlines()
         for l in lines:
             ix = l.find("#")

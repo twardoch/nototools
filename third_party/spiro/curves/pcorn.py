@@ -1,23 +1,13 @@
 # Utilities for piecewise cornu representation of curves
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
-from math import atan2
-from math import hypot
-from math import sqrt
-from math import sin
-from math import cos
-from math import fabs
-from math import floor
-from math import pi
+from math import atan2, cos, fabs, floor, hypot, pi, sin, sqrt
 
 import clothoid
 import cornu
 
 
-class Segment(object):
+class Segment:
     def __init__(self, z0, z1, th0, th1):
         self.z0 = z0
         self.z1 = z1
@@ -26,7 +16,16 @@ class Segment(object):
         self.compute()
 
     def __repr__(self):
-        return '[' + repr(self.z0) + repr(self.z1) + ' ' + repr(self.th0) + ' ' + repr(self.th1) + ']'
+        return (
+            "["
+            + repr(self.z0)
+            + repr(self.z1)
+            + " "
+            + repr(self.th0)
+            + " "
+            + repr(self.th1)
+            + "]"
+        )
 
     def compute(self):
         dx = self.z1[0] - self.z0[0]
@@ -51,8 +50,8 @@ class Segment(object):
             k1 = 1e-6  # hack
         if k1 != 0:
             sqrk1 = sqrt(2 * abs(k1))
-            t0 = (k0 - .5 * k1) / sqrk1
-            t1 = (k0 + .5 * k1) / sqrk1
+            t0 = (k0 - 0.5 * k1) / sqrk1
+            t1 = (k0 + 0.5 * k1) / sqrk1
             (y0, x0) = cornu.eval_cornu(t0)
             (y1, x1) = cornu.eval_cornu(t1)
             chord_th = atan2(y1 - y0, x1 - x0)
@@ -88,8 +87,10 @@ class Segment(object):
             sqrk1 = sqrt(2 * abs(k1))
             t = (k0 + u * k1) / sqrk1
             (y, x) = cornu.eval_cornu(t)
-            return [self.x0 + self.mxx * x + self.mxy * y,
-                    self.y0 + self.myx * x + self.myy * y]
+            return [
+                self.x0 + self.mxx * x + self.mxy * y,
+                self.y0 + self.myx * x + self.myy * y,
+            ]
 
     def find_extrema(self):
         # find solutions of th(s) = 0 mod pi/2
@@ -106,7 +107,7 @@ class Segment(object):
         result = []
         for i in range(n0, n1, signum):
             th = pi / 2 * (i + 0.5 * (signum + 1))
-            a = .5 * self.k1
+            a = 0.5 * self.k1
             b = self.k0
             c = self.thmid - th
             if a == 0:
@@ -123,7 +124,7 @@ class Segment(object):
         return result
 
 
-class Curve(object):
+class Curve:
     def __init__(self, segs):
         self.segs = segs
         self.compute()
@@ -177,9 +178,13 @@ class Curve(object):
             pseg = self.segs[(i + len(self.segs) - 1) % len(self.segs)]
             seg = self.segs[i]
             th = clothoid.mod_2pi(pseg.chth + pseg.th1 - (seg.chth - seg.th0))
-            print('% pseg', pseg.chth + pseg.th1, 'seg', seg.chth - seg.th0)
+            print("% pseg", pseg.chth + pseg.th1, "seg", seg.chth - seg.th0)
             pisline = pseg.k0 == 0 and pseg.k1 == 0
             sisline = seg.k0 == 0 and seg.k1 == 0
-            if fabs(th) > 1e-3 or (pisline and not sisline) or (sisline and not pisline):
+            if (
+                fabs(th) > 1e-3
+                or (pisline and not sisline)
+                or (sisline and not pisline)
+            ):
                 result.append(self.sstarts[i])
         return result

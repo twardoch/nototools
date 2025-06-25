@@ -30,7 +30,7 @@ def print_names(families):
 
 
 def check_cp(families, cp):
-    return set([family.name for family in families.values() if cp in family.charset])
+    return {family.name for family in families.values() if cp in family.charset}
 
 
 def codepoints(cp_list):
@@ -60,7 +60,7 @@ def to_ranges_str(cps):
 
     def emit(first, last):
         if first != last:
-            ranges.append("%04x-%04x" % (first, last))
+            ranges.append(f"{first:04x}-{last:04x}")
         else:
             ranges.append("%04x" % first)
 
@@ -89,7 +89,7 @@ def run(args, families):
                 out_family_str = "\n  ".join(sorted(out_families))
             else:
                 out_family_str = "<no coverage>"
-            print("%s:\n  %s" % (to_ranges_str(out_cps), out_family_str))
+            print(f"{to_ranges_str(out_cps)}:\n  {out_family_str}")
 
         cps = codepoints(args.each)
         print("families that contain any of %s, by cp" % to_ranges_str(cps))
@@ -132,14 +132,14 @@ def run(args, families):
                 missing.add(cp)
         if result:
             for k, v in sorted(result.items()):
-                print("  %s: %s" % (k, to_ranges_str(v)))
+                print(f"  {k}: {to_ranges_str(v)}")
         if missing:
             print("  not supported: %s" % to_ranges_str(missing))
 
     if args.all:
         cps = sorted(codepoints(args.all))
         print("families that contain all of %s" % to_ranges_str(cps))
-        result = set([family.name for family in families.values()])
+        result = {family.name for family in families.values()}
         for cp in cps:
             family_names = check_cp(families, cp)
             result &= family_names

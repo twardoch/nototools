@@ -1,4 +1,3 @@
-# coding=UTF-8
 #
 # Copyright 2015 Google Inc. All Rights Reserved.
 #
@@ -16,19 +15,16 @@
 
 
 import glob
-from os import path
 import unittest
+from os import path
 
-from fontTools import ttLib
 import freetype
+from fontTools import ttLib
 
-from nototools import coverage
-from nototools import font_data
-from nototools import noto_fonts
-from nototools import unicode_data
+from nototools import coverage, font_data, noto_fonts, unicode_data
 from nototools.glyph_area_pen import GlyphAreaPen
-from nototools.unittests import layout
 from nototools.py23 import unichr
+from nototools.unittests import layout
 
 
 def get_rendered_char_height(font_filename, font_size, char, target="mono"):
@@ -137,7 +133,7 @@ class TestMetaInfo(FontTest):
             self.assertEqual(font["OS/2"].achVendID, self.expected_os2_achVendID)
 
     def test_us_weight(self):
-        "Tests the usWeight of the fonts to be correct." ""
+        "Tests the usWeight of the fonts to be correct."
         for font in self.fonts:
             weight = noto_fonts.parse_weight(font_data.font_name(font))
             expected_numeric_weight = noto_fonts.WEIGHTS[weight]
@@ -146,7 +142,7 @@ class TestMetaInfo(FontTest):
             self.assertEqual(font["OS/2"].usWeightClass, expected_numeric_weight)
 
     def test_version_numbers(self):
-        "Tests the two version numbers of the font to be correct." ""
+        "Tests the two version numbers of the font to be correct."
         for font in self.fonts:
             version = font_data.font_version(font)
             usable_part_of_version = version.split(";")[0]
@@ -179,7 +175,7 @@ class TestNames(FontTest):
 
         name_nosp = self.family_name.replace(" ", "")
         condensed_name_nosp = self.condensed_family_name.replace(" ", "")
-        family_names = "%s|%s" % (condensed_name_nosp, name_nosp)
+        family_names = f"{condensed_name_nosp}|{name_nosp}"
 
         filename_match = noto_fonts.match_filename(filename, family_names)
         family, _, _, _, _, _, _, _, weight, slope, _ = filename_match.groups()
@@ -211,7 +207,7 @@ class TestNames(FontTest):
 
             # check that family name includes weight, if not regular or bold
             if weight not in ["Regular", "Bold"]:
-                self.assertEqual(records[1], "%s %s" % (family, weight))
+                self.assertEqual(records[1], f"{family} {weight}")
 
                 # check typographic name, if present
                 self.assertIn(16, records)
@@ -598,7 +594,7 @@ class TestGlyphBounds(FontTest):
             self._run_test(names, bounds, multiplier, errmsg, True)
 
     def _run_test(self, names, bounds, multiplier, errmsg, should_exceed):
-        errmsg_format = "%%s's %%s %%s %s %%d (%s)" % (
+        errmsg_format = "%s's %s %s {} %d ({})".format(
             "does not exceed" if should_exceed else "exceeds",
             errmsg,
         )
@@ -749,11 +745,11 @@ class TestSpacingMarks(FontTest):
         for font in self.font_files:
             print("Testing %s for spacing marks in combination..." % font)
             for base_letter in (
-                "A\u00C6BCDEFGHIJKLMNO\u00D8\u01A0PRST"
-                "U\u01AFVWXYZ"
-                "a\u00E6bcdefghi\u0131j\u0237klmn"
-                "o\u00F8\u01A1prs\u017Ftu\u01B0vwxyz"
-                "\u03D2"
+                "A\u00c6BCDEFGHIJKLMNO\u00d8\u01a0PRST"
+                "U\u01afVWXYZ"
+                "a\u00e6bcdefghi\u0131j\u0237klmn"
+                "o\u00f8\u01a1prs\u017ftu\u01b0vwxyz"
+                "\u03d2"
             ):
                 print("Testing %s combinations" % base_letter)
                 for mark in self.marks_to_test:
@@ -791,9 +787,9 @@ class TestSoftDottedChars(FontTest):
             # TODO: replace the following list with actual derivation based on
             # Unicode's soft-dotted property
             for base_letter in (
-                "ij\u012F\u0249\u0268\u029D\u02B2\u03F3\u0456"
-                "\u0458\u1D62\u1D96\u1DA4\u1DA8\u1E2D\u1ECB"
-                "\u2071\u2C7C"
+                "ij\u012f\u0249\u0268\u029d\u02b2\u03f3\u0456"
+                "\u0458\u1d62\u1d96\u1da4\u1da8\u1e2d\u1ecb"
+                "\u2071\u2c7c"
             ):
                 print("Testing %s combinations" % base_letter.encode("UTF-8"))
                 for mark in self.marks_to_test:

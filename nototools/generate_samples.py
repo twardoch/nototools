@@ -145,7 +145,7 @@ def next_cp(ustr, index):
 ### generator class
 
 
-class SampleGen(object):
+class SampleGen:
     def __init__(self, patterns, pattern_order):
         self.patterns = patterns
         self.pattern_order = pattern_order
@@ -327,7 +327,9 @@ def _convert_to_segments(arg):
         next = chunks[i]
         index, ncp = next_cp(next, 0)
         if ncp <= pcp:
-            raise ValueError('illegal range from %0x to %0x in "%s"' % (pcp, ncp, arg))
+            raise ValueError(
+                f'illegal range from {pcp:0x} to {ncp:0x} in "{arg}"'
+            )
         result.append((pcp, ncp))
         prev = next[index:]
     if prev:

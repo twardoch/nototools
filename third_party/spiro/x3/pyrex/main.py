@@ -1,6 +1,3 @@
-from __future__ import absolute_import
-from __future__ import print_function
-
 import x3
 
 
@@ -17,7 +14,7 @@ class my_viewclient:
         print(buttons, mods, x, y)
 
     def draw(self, dc):
-        print('rect:', dc.rect)
+        print("rect:", dc.rect)
         dc.moveto(0, 0)
         dc.lineto(100, 100)
         print(dc.currentpoint())
@@ -25,8 +22,8 @@ class my_viewclient:
         dc.selectfont("Nimbus Sans L", 0, 0)
         dc.setfontsize(12)
         dc.moveto(50, 10)
-        dc.showtext(u"\u00a1hello, world!")
-        print(dc.textextents(u"\u00a1hello, world!"))
+        dc.showtext("\u00a1hello, world!")
+        print(dc.textextents("\u00a1hello, world!"))
 
 
 win = x3.window(0, "foo", my_callback)
@@ -40,7 +37,7 @@ x3.menuitem(m, "Quit", "quit", "<ctrl>q")
 v = x3.vbox(win, 0, 12)
 
 v.setpacking(True, False, 0)
-x3.button(v, "butt", u"\u00a1hello!")
+x3.button(v, "butt", "\u00a1hello!")
 x3.edittext(v, "quux")
 v.setpacking(True, True, 0)
 x3.view(v, 263, my_viewclient())

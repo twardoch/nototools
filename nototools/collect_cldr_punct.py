@@ -23,14 +23,12 @@ If cldr specifies characters here, we want to require it in the fonts."""
 import collections
 import glob
 import os
-from os import path
 import sys
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
+from os import path
 
+from nototools import cldr_data, tool_utils, unicode_data
 from nototools.py23 import unichr
-from nototools import cldr_data
-from nototools import tool_utils
-from nototools import unicode_data
 
 TOOLS_DIR = path.abspath(path.join(path.dirname(__file__), os.pardir))
 CLDR_DIR = path.join(TOOLS_DIR, "third_party", "cldr")
@@ -140,7 +138,7 @@ def _write_script_to_punct(script_to_punct):
         chars = script_to_punct[script]
         int_chars = [ord(cp) for cp in chars]
         print("  # %s" % ("|".join(sorted(chars))))
-        print("  '%s': '%s'," % (script, tool_utils.write_int_ranges(int_chars)))
+        print(f"  '{script}': '{tool_utils.write_int_ranges(int_chars)}',")
     print("}")
 
 

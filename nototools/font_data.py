@@ -18,9 +18,9 @@
 
 __author__ = "roozbeh@google.com (Roozbeh Pournader)"
 
-from nototools import opentype_data
-
 from fontTools.ttLib.tables._n_a_m_e import NameRecord
+
+from nototools import opentype_data
 
 
 def get_name_records(font):
@@ -175,9 +175,7 @@ def printable_font_revision(font, accuracy=2):
     """Returns the font revision as a string from the 'head' table."""
     font_revision = font["head"].fontRevision
     font_revision_int = int(font_revision)
-    font_revision_frac = int(
-        round((font_revision - font_revision_int) * 10**accuracy)
-    )
+    font_revision_frac = int(round((font_revision - font_revision_int) * 10**accuracy))
 
     font_revision_int = str(font_revision_int)
     font_revision_frac = str(font_revision_frac).zfill(accuracy)

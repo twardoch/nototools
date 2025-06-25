@@ -25,8 +25,7 @@ following family until the next style definition."""
 import argparse
 import re
 
-from nototools import noto_fonts
-from nototools import tool_utils
+from nototools import noto_fonts, tool_utils
 
 _style_re = re.compile(r"--\s+(.*)\s+--")
 _extended_style_re = re.compile(r"^([TLRBH]+)(?:/([CR]+)(?:/([RI]+))?)?$")
@@ -109,7 +108,7 @@ def _for_all_familynames(namefile, fn):
     all families in namefile. '#' is a comment to eol, blank lines are
     ignored."""
     styles = None
-    with open(namefile, "r") as f:
+    with open(namefile) as f:
         for name in f:
             ix = name.find("#")
             if ix >= 0:
@@ -171,8 +170,7 @@ def main():
     parser.add_argument(
         "-f",
         "--familynamedata",
-        help="file containing family name/style data"
-        " (default %s)" % DEFAULT_NAMEDATA,
+        help="file containing family name/style data (default %s)" % DEFAULT_NAMEDATA,
         metavar="file",
         default=DEFAULT_NAMEDATA,
     )

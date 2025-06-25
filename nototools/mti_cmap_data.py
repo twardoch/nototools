@@ -17,12 +17,10 @@
 """Extract cmap data from mti phase 3 spreadsheet."""
 
 import argparse
-from os import path
 import sys
+from os import path
 
-from nototools import cmap_data
-from nototools import tool_utils
-from nototools import unicode_data
+from nototools import cmap_data, tool_utils, unicode_data
 
 # exceptions for script codes that are not actual script codes, but
 # our own custom keys.
@@ -31,11 +29,9 @@ _SCRIPT_KEY_NAMES = [("SYM2", "Symbols2")]
 
 def get_script_for_name(script_name):
     starred = False
-    added = False
     if script_name[-1] == "*":
         starred = True
         script_name = script_name[:-1]
-        added = True
     if script_name in ["LGC", "MONO", "MUSIC", "SYM2"]:
         return script_name, starred
 
@@ -94,7 +90,7 @@ def get_script_to_cmaps(csvdata):
                 if v[-1] == "*":
                     xdata[i].add(int(v[:-1], 16))
                 elif v[-1] == "+":
-                    print("> %s added %s" % (header[i], v[:-1]))
+                    print(f"> {header[i]} added {v[:-1]}")
                     data[i].add(int(v[:-1], 16))
                 else:
                     data[i].add(int(v, 16))
@@ -119,7 +115,7 @@ def cmap_data_from_csv(csvdata, scripts=None, exclude_scripts=None, infile=None)
 
 
 def cmap_data_from_csv_file(csvfile, scripts=None, exclude_scripts=None):
-    with open(csvfile, "r") as f:
+    with open(csvfile) as f:
         csvdata = f.read()
     return cmap_data_from_csv(csvdata, scripts, exclude_scripts, csvfile)
 
@@ -157,7 +153,7 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
 
         rd = script_to_rowdata[script]
         star = int(getattr(rd, "xcount", -1)) != -1
-        col = ['"%s%s"' % (_script_to_name(script), "*" if star else "")]
+        col = ['"{}{}"'.format(_script_to_name(script), "*" if star else "")]
         cps = tool_utils.parse_int_ranges(rd.ranges)
         xranges = getattr(rd, "xranges", None)
         if xranges is not None:
@@ -166,7 +162,9 @@ def csv_from_cmap_data(data, scripts, exclude_scripts):
         else:
             xcps = frozenset()
         num_cells += len(cps)
-        col.extend("%04X%s" % (cp, "*" if cp in xcps else "") for cp in sorted(cps))
+        col.extend(
+            "{:04X}{}".format(cp, "*" if cp in xcps else "") for cp in sorted(cps)
+        )
         cols.append(col)
         max_lines = max(max_lines, len(col))
 

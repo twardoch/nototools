@@ -34,11 +34,10 @@ import shutil
 import subprocess
 import sys
 
-from nototools import notoconfig
-from nototools import compare_summary
+from nototools import compare_summary, notoconfig
 
 
-class RedirectStdout(object):
+class RedirectStdout:
     """Redirect stdout to file."""
 
     def __init__(self, filename):
@@ -115,7 +114,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
                 new_label = "h/u"
         if new_label:
             name_info[root_name] = new_label
-        names = ", ".join(sorted(["%s(%s)" % (k, v) for k, v in name_info.items()]))
+        names = ", ".join(sorted([f"{k}({v})" for k, v in name_info.items()]))
 
     # get date of the drop from srcdir
     result = re.search(r"\d{4}_\d{2}_\d{2}", srcdir)
@@ -130,7 +129,7 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
             operation = "Add"
     else:
         operation = "Update"
-    one_line_msg = "%s %s from delivery on %s." % (operation, names, date_str)
+    one_line_msg = f"{operation} {names} from delivery on {date_str}."
 
     # generate compare file to use as checkin log
     checkin_msg_file = "/tmp/svn_checkin.txt"
@@ -170,7 +169,9 @@ def push_to_noto_alpha(alphadir, srcdir, dry_run):
     with open(checkin_msg_file) as f:
         checkin_msg = f.read().strip()
 
-    print("%s\n-----\n%s\n-----" % ("dry run" if dry_run else "summary", checkin_msg))
+    print(
+        "{}\n-----\n{}\n-----".format("dry run" if dry_run else "summary", checkin_msg)
+    )
     if not dry_run:
         print("command to update: svn commit -F '%s'" % checkin_msg_file)
 

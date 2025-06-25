@@ -23,9 +23,7 @@ import filecmp
 import os
 import os.path
 
-from nototools import noto_lint
-from nototools import summary
-from nototools import tool_utils
+from nototools import noto_lint, summary, tool_utils
 
 
 def cmp(x, y):
@@ -117,7 +115,7 @@ def compare_table_info(base_info, target_info):
         if len(others) > 0 and len(biggest_deltas) < 5:
             other_count = len(others)
             biggest_delta_strings.append(
-                "%s other%s" % (other_count, "s" if other_count != 1 else "")
+                "{} other{}".format(other_count, "s" if other_count != 1 else "")
             )
         result.append("changed " + ", ".join(biggest_delta_strings))
     if added:
@@ -156,10 +154,10 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
             msg = "(base is newer!)"
         else:
             msg = ""
-        print("    version: %s vs %s %s" % (b_version, t_version, msg))
+        print(f"    version: {b_version} vs {t_version} {msg}")
     if b_name != t_name:
         diff_list.append("name")
-        print("    name: '%s' vs '%s'" % (b_name, t_name))
+        print(f"    name: '{b_name}' vs '{t_name}'")
     if b_size != t_size:
         diff_list.append("size")
         delta = int(t_size) - int(b_size)
@@ -167,7 +165,7 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
             msg = "%d byte%s smaller" % (-delta, "" if delta == -1 else "s")
         else:
             msg = "%d byte%s bigger" % (delta, "" if delta == 1 else "s")
-        print("    size: %s vs %s (%s)" % (b_size, t_size, msg))
+        print(f"    size: {b_size} vs {t_size} ({msg})")
     table_diffs = compare_table_info(b_tableinfo, t_tableinfo)
     if table_diffs:
         diff_list.append("table")
@@ -179,7 +177,7 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
             msg = "%d fewer glyph%s" % (-delta, "" if delta == -1 else "s")
         else:
             msg = "%d more glyph%s" % (delta, "" if delta == 1 else "s")
-        print("    glyphs: %s vs %s (%s)" % (b_numglyphs, t_numglyphs, msg))
+        print(f"    glyphs: {b_numglyphs} vs {t_numglyphs} ({msg})")
     if b_numchars != t_numchars:
         diff_list.append("char count")
         delta = int(t_numchars) - int(b_numchars)
@@ -187,7 +185,7 @@ def print_difference(k, base_tuple, target_tuple, other_difference):
             msg = "%d fewer char%s" % (-delta, "" if delta == -1 else "s")
         else:
             msg = "%d more char%s" % (delta, "" if delta == 1 else "s")
-        print("    chars: %s vs %s (%s)" % (b_numchars, t_numchars, msg))
+        print(f"    chars: {b_numchars} vs {t_numchars} ({msg})")
     if b_cmap != t_cmap:
         removed_from_base = b_cmap - t_cmap
         if removed_from_base:
@@ -277,7 +275,7 @@ def main():
     parser.add_argument(
         "-b",
         "--base_root",
-        help="root of directory tree, base for comparison " "(default [fonts])",
+        help="root of directory tree, base for comparison (default [fonts])",
         metavar="dir",
         default="[fonts]",
     )

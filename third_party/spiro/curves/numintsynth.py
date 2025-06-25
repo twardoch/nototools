@@ -1,14 +1,12 @@
 # Synthesize a procedure to numerically integrate the 3rd order poly spiral
 
-from __future__ import division
-from __future__ import print_function
 
 tex = False
 
 if tex:
-    mulsym = ' '
+    mulsym = " "
 else:
-    mulsym = ' * '
+    mulsym = " * "
 
 
 class Poly:
@@ -17,7 +15,7 @@ class Poly:
         self.coeffs = coeffs
 
     def eval(self, x):  # TODO: method was broken. Investigate remove possibility.
-        y = x ** self.p0
+        y = x**self.p0
         z = 0
         for c in self.coeffs:
             z += y * c
@@ -45,16 +43,16 @@ def add(poly0, poly1, nmax):
 
 def pr(string):
     if tex:
-        print(string, '\\\\')
+        print(string, "\\\\")
     else:
-        print('\t' + string + ';')
+        print("\t" + string + ";")
 
 
 def prd(string):
     if tex:
-        print(string, '\\\\')
+        print(string, "\\\\")
     else:
-        print('\tdouble ' + string + ';')
+        print("\tdouble " + string + ";")
 
 
 def polymul(p0, p1, degree, basename, suppress_odd=False):
@@ -72,7 +70,7 @@ def polymul(p0, p1, degree, basename, suppress_odd=False):
         else:
             var = basename % i  # type: str
             if (j % 2 == 0) or not suppress_odd:
-                prd(var + ' = ' + ' + '.join(terms))
+                prd(var + " = " + " + ".join(terms))
             result.append(var)
     return result
 
@@ -89,48 +87,48 @@ def polysquare(p0, degree, basename):
                     terms.append(t0 + mulsym + t1)
         if len(terms) >= 1:
             if tex and len(terms) == 1:
-                terms = ['2 ' + terms[0]]
+                terms = ["2 " + terms[0]]
             else:
-                terms = ['2' + mulsym + '(' + ' + '.join(terms) + ')']
+                terms = ["2" + mulsym + "(" + " + ".join(terms) + ")"]
         if (i % 2) == 0:
             t = p0[i / 2]
             if t is not None:
                 if tex:
-                    terms.append(t + '^2')
+                    terms.append(t + "^2")
                 else:
                     terms.append(t + mulsym + t)
         if not terms:
             result.append(None)
         else:
             var = basename % i  # type: str
-            prd(var + ' = ' + ' + '.join(terms))
+            prd(var + " = " + " + ".join(terms))
             result.append(var)
     return result
 
 
 def mkspiro(degree):
     if tex:
-        us = ['u = 1']
-        vs = ['v =']
+        us = ["u = 1"]
+        vs = ["v ="]
     else:
-        us = ['u = 1']
-        vs = ['v = 0']
+        us = ["u = 1"]
+        vs = ["v = 0"]
     if tex:
-        tp = [None, 't_{11}', 't_{12}', 't_{13}', 't_{14}']
+        tp = [None, "t_{11}", "t_{12}", "t_{13}", "t_{14}"]
     else:
-        tp = [None, 't1_1', 't1_2', 't1_3', 't1_4']
+        tp = [None, "t1_1", "t1_2", "t1_3", "t1_4"]
     if tex:
-        prd(tp[1] + ' = k_0')
-        prd(tp[2] + ' = \\frac{k_1}{2}')
-        prd(tp[3] + ' = \\frac{k_2}{6}')
-        prd(tp[4] + ' = \\frac{k_3}{24}')
+        prd(tp[1] + " = k_0")
+        prd(tp[2] + " = \\frac{k_1}{2}")
+        prd(tp[3] + " = \\frac{k_2}{6}")
+        prd(tp[4] + " = \\frac{k_3}{24}")
     else:
-        prd(tp[1] + ' = km0')
-        prd(tp[2] + ' = .5 * km1')
-        prd(tp[3] + ' = (1./6) * km2')
-        prd(tp[4] + ' = (1./24) * km3')
+        prd(tp[1] + " = km0")
+        prd(tp[2] + " = .5 * km1")
+        prd(tp[3] + " = (1./6) * km2")
+        prd(tp[4] + " = (1./24) * km3")
     tlast = tp
-    coef = 1.
+    coef = 1.0
     for i in range(1, degree - 1):
         tmp = []
         tcoef = coef
@@ -139,34 +137,34 @@ def mkspiro(degree):
             c = tcoef / (j + 1)
             if (j % 2) == 0 and tlast[j] is not None:
                 if tex:
-                    tmp.append('\\frac{%s}{%.0f}' % (tlast[j], 1. / c))
+                    tmp.append(f"\\frac{{{tlast[j]}}}{{{1.0 / c:.0f}}}")
                 else:
                     if c < 1e-9:
-                        cstr = '%.16e' % c
+                        cstr = "%.16e" % c
                     else:
-                        cstr = '(1./%d)' % int(.5 + (1. / c))
-                    tmp.append(cstr + ' * ' + tlast[j])
-            tcoef *= .5
+                        cstr = "(1./%d)" % int(0.5 + (1.0 / c))
+                    tmp.append(cstr + " * " + tlast[j])
+            tcoef *= 0.5
         if tmp:
-            sign = ('+', '-')[(i // 2) % 2]
-            var = ('u', 'v')[i % 2]
+            sign = ("+", "-")[(i // 2) % 2]
+            var = ("u", "v")[i % 2]
             if tex:
                 if i == 1:
-                    pref = ''
+                    pref = ""
                 else:
-                    pref = sign + ' '
-                string = pref + (' ' + sign + ' ').join(tmp)
+                    pref = sign + " "
+                string = pref + (" " + sign + " ").join(tmp)
             else:
-                string = var + ' ' + sign + '= ' + ' + '.join(tmp)
-            if var == 'u':
+                string = var + " " + sign + "= " + " + ".join(tmp)
+            if var == "u":
                 us.append(string)
             else:
                 vs.append(string)
         if i < degree - 1:
             if tex:
-                basename = 't_{%d%%d}' % (i + 1)
+                basename = "t_{%d%%d}" % (i + 1)
             else:
-                basename = 't%d_%%d' % (i + 1)
+                basename = "t%d_%%d" % (i + 1)
             if i == 1:
                 tnext = polysquare(tp, degree - 1, basename)
                 t2 = tnext
@@ -176,12 +174,11 @@ def mkspiro(degree):
                 tnext = polymul(tlast, tp, degree - 1, basename, True)
             else:
                 tnext = polymul(t2l, t2, degree - 1, basename)
-            t2l = tlast
             tlast = tnext
-        coef /= (i + 1)
+        coef /= i + 1
     if tex:
-        pr(' '.join(us))
-        pr(' '.join(vs))
+        pr(" ".join(us))
+        pr(" ".join(vs))
     else:
         for u in us:
             pr(u)
@@ -189,5 +186,5 @@ def mkspiro(degree):
             pr(v)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     mkspiro(12)

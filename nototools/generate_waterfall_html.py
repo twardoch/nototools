@@ -19,13 +19,11 @@
 import argparse
 import codecs
 import os
-from os import path
 import re
 import shutil
+from os import path
 
-from nototools import lang_data
-from nototools import noto_fonts
-from nototools import tool_utils
+from nototools import lang_data, noto_fonts, tool_utils
 
 
 def _add_styles(lines, prefix, font_names, font_sizes):
@@ -103,9 +101,7 @@ def _add_examples(lines, prefix, font_names, font_sizes, text):
 
 def _add_example_switch(lines, prefix, font_names):
     lines.append(prefix + "<p>Select font")
-    lines.append(
-        prefix + '<select name="font_select" ' 'onchange="_font_select(this)">'
-    )
+    lines.append(prefix + '<select name="font_select" onchange="_font_select(this)">')
     for i, name in enumerate(font_names):
         lines.append(prefix + '  <option value="f%d">%s</option>' % (i, name))
     lines.append(prefix + "</select>")
@@ -162,10 +158,10 @@ def _get_sample_text(directory, font_names, lang):
             scripts |= noto_fonts.script_key_to_scripts(noto_font.script)
 
     if lang:
-        lang_scripts = ["%s-%s" % (lang, script) for script in scripts]
+        lang_scripts = [f"{lang}-{script}" for script in scripts]
     else:
         lang_scripts = [
-            "%s-%s" % (lang_data.script_to_default_lang(script), script)
+            f"{lang_data.script_to_default_lang(script)}-{script}"
             for script in scripts
         ]
     lang_scripts.extend("und-%s" % script for script in scripts)
@@ -225,7 +221,7 @@ def generate(root, font_str, font_sizes, text, lang, out_file):
 
     font_names = _get_font_list(root, font_str)
     if not font_names:
-        raise Exception('no fonts matching "%s" in %s' % (font_str, root))
+        raise Exception(f'no fonts matching "{font_str}" in {root}')
 
     print(
         "found %d fonts under %s:\n  %s"
@@ -259,7 +255,7 @@ def main():
     parser.add_argument(
         "-r",
         "--root",
-        help="directory containing fonts, optionally in " "hinted/unhinted subdirs",
+        help="directory containing fonts, optionally in hinted/unhinted subdirs",
         default="[fonts]",
         required=True,
         metavar="dir",
@@ -281,7 +277,7 @@ def main():
     parser.add_argument(
         "-l",
         "--lang",
-        help="language string to select among multiple texts " "for a script",
+        help="language string to select among multiple texts for a script",
         metavar="lang",
     )
     parser.add_argument(

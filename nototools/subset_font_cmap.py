@@ -21,9 +21,7 @@ from os import path
 
 from fontTools import subset
 
-from nototools import font_data
-from nototools import swat_license
-from nototools import tool_utils
+from nototools import font_data, swat_license, tool_utils
 
 
 def _get_default_options():
@@ -87,7 +85,7 @@ def main():
     parser.add_argument(
         "-e",
         "--exclude",
-        help="ranges of characters to exclude " "(applied after include)",
+        help="ranges of characters to exclude (applied after include)",
         metavar="range",
         nargs="+",
     )

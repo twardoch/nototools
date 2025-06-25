@@ -1,27 +1,19 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from math import sin
-from math import cos
-from math import hypot
-from math import atan2
-from math import pi
 import array
-import sys
 import random
+import sys
+from math import atan2, cos, hypot, pi, sin
 
 
 def run_mvc(k, k1, k2, k3, C, n=100, do_print=False):
-    cmd = 'moveto'
-    result = array.array('d')
+    cmd = "moveto"
+    result = array.array("d")
     cost = 0
     th = 0
     x = 0
     y = 0
     dt = 1.0 / n
     for i in range(n):
-        k4 = -k * (k * k2 - .5 * k1 * k1 + C)
+        k4 = -k * (k * k2 - 0.5 * k1 * k1 + C)
 
         cost += dt * k1 * k1
         x += dt * cos(th)
@@ -35,13 +27,13 @@ def run_mvc(k, k1, k2, k3, C, n=100, do_print=False):
         result.append(k)
         if do_print:
             print(400 + 400 * x, 500 + 400 * y, cmd)
-        cmd = 'lineto'
+        cmd = "lineto"
     return result, cost, x, y, th
 
 
 def run_mec_cos(k, lam1, lam2, n=100, do_print=False):
-    cmd = 'moveto'
-    result = array.array('d')
+    cmd = "moveto"
+    result = array.array("d")
     cost = 0
     th = 0
     x = 0
@@ -59,7 +51,7 @@ def run_mec_cos(k, lam1, lam2, n=100, do_print=False):
         result.append(k)
         if do_print:
             print(400 + 400 * x, 500 + 400 * y, cmd)
-        cmd = 'lineto'
+        cmd = "lineto"
     return result, cost, x, y, th
 
 
@@ -78,8 +70,8 @@ def descend(params, fnl):
                 bestparams = newparams
                 best = new
         if bestparams == params:
-            delta *= .5
-        print('%', params, delta)
+            delta *= 0.5
+        print("%", params, delta)
         sys.stdout.flush()
         params = bestparams
     return bestparams
@@ -99,9 +91,9 @@ def descend2(params, fnl):
                 bestparams = newparams
                 best = new
         if bestparams == params:
-            delta *= .5
+            delta *= 0.5
         params = bestparams
-        print('%', params, best, delta)
+        print("%", params, best, delta)
         sys.stdout.flush()
     return bestparams
 
@@ -123,15 +115,15 @@ def descend3(params, fnl):
             newparams[ix] += dp
             new = fnl(newparams, i)
             dfdp.append((new - base) / dp)
-        print('% dfdp = ', dfdp)
-        xr = 0.
+        print("% dfdp = ", dfdp)
+        xr = 0.0
         yr = base
         xm = -1e-3
         ym = desc_eval(params, dfdp, fnl, i, xm)
         if ym > yr:
             while ym > yr:
                 xl, yl = xm, ym
-                xm = .618034 * xl
+                xm = 0.618034 * xl
                 ym = desc_eval(params, dfdp, fnl, i, xm)
         else:
             xl = 1.618034 * xm
@@ -146,19 +138,19 @@ def descend3(params, fnl):
         x0, x3 = xl, xr
         if abs(xr - xm) > abs(xm - xl):
             x1, y1 = xm, ym
-            x2 = xm + .381966 * (xr - xm)
+            x2 = xm + 0.381966 * (xr - xm)
             y2 = desc_eval(params, dfdp, fnl, i, x2)
         else:
             x2, y2 = xm, ym
-            x1 = xm + .381966 * (xl - xm)
+            x1 = xm + 0.381966 * (xl - xm)
             y1 = desc_eval(params, dfdp, fnl, i, x1)
         for j in range(30):
             if y2 < y1:
-                x0, x1, x2 = x1, x2, x2 + .381966 * (x3 - x2)
-                y0, y1 = y1, y2
+                x0, x1, x2 = x1, x2, x2 + 0.381966 * (x3 - x2)
+                _y0, y1 = y1, y2
                 y2 = desc_eval(params, dfdp, fnl, i, x2)
             else:
-                x1, x2, x3 = x1 + .381966 * (x0 - x1), x1, x2
+                x1, x2, x3 = x1 + 0.381966 * (x0 - x1), x1, x2
                 y1 = desc_eval(params, dfdp, fnl, i, x1)
         if y1 < y2:
             xbest = x1
@@ -168,7 +160,7 @@ def descend3(params, fnl):
             ybest = y2
         for ix in range(len(params)):
             params[ix] += xbest * dfdp[ix]
-        print('%', params, xbest, ybest)
+        print("%", params, xbest, ybest)
         sys.stdout.flush()
     return params
 
@@ -181,7 +173,7 @@ def mk_mvc_fnl(th0, th1):
         actual_th0 = atan2(y, x)
         actual_th1 = th - actual_th0
         if do_print:
-            print('%', x, y, actual_th0, actual_th1, cost)
+            print("%", x, y, actual_th0, actual_th1, cost)
         err = (th0 - actual_th0) ** 2 + (th1 - actual_th1) ** 2
         multiplier = 1000
         return cost + err * multiplier
@@ -197,7 +189,7 @@ def mk_mec_fnl(th0, th1):
         actual_th0 = atan2(y, x)
         actual_th1 = th - actual_th0
         if do_print:
-            print('%', x, y, actual_th0, actual_th1, cost)
+            print("%", x, y, actual_th0, actual_th1, cost)
         err = (th0 - actual_th0) ** 2 + (th1 - actual_th1) ** 2
         multiplier = 10
         return cost + err * multiplier
@@ -216,8 +208,8 @@ def mvc_test():
     params = descend3(params, fnl)
     k, k1, k2, k3, C = params
     run_mvc(k, k1, k2, k3, C, 100, True)
-    print('stroke showpage')
-    print('%', params)
+    print("stroke showpage")
+    print("%", params)
 
 
 def mec_test():
@@ -227,8 +219,8 @@ def mec_test():
     params = descend2(params, fnl)
     k, lam1, lam2 = params
     run_mec_cos(k, lam1, lam2, 1000, True)
-    print('stroke showpage')
-    print('%', params)
+    print("stroke showpage")
+    print("%", params)
 
 
 mvc_test()

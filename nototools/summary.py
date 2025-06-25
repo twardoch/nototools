@@ -25,8 +25,7 @@ import re
 
 from fontTools import ttLib
 
-from nototools import noto_lint
-from nototools import font_data
+from nototools import font_data, noto_lint
 
 
 def get_largest_cmap(font):
@@ -102,7 +101,7 @@ def print_tup(tup, short):
         if idx == 7 and type(val) == type({}):
             parts = []
             for tag in sorted(val):
-                parts.append("%s=%s" % (tag, val[tag][0]))
+                parts.append(f"{tag}={val[tag][0]}")
             result = ", ".join(parts)
         else:
             if idx == 6 and type(val) == type(set()):
@@ -140,11 +139,13 @@ def print_summary(summary_list, short):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("root", help="root of directory tree")
-    parser.add_argument(
-        "--name",
-        help="only report files where name regex matches "
-        "some portion of the path under root",
-    ),
+    (
+        parser.add_argument(
+            "--name",
+            help="only report files where name regex matches "
+            "some portion of the path under root",
+        ),
+    )
     parser.add_argument(
         "-s", "--short", help="shorter summary format", action="store_true"
     )
@@ -154,7 +155,7 @@ def main():
         print("%s does not exist or is not a directory" % args.root)
     else:
         root = os.path.abspath(args.root)
-        print("root: %s, name: %s" % (root, args.name if args.name else "[all]"))
+        print("root: {}, name: {}".format(root, args.name if args.name else "[all]"))
         print_summary(summarize(root, name=args.name), args.short)
 
 

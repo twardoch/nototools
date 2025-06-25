@@ -15,8 +15,6 @@
 # limitations under the License.
 # test reading bitmap dump
 
-from __future__ import absolute_import
-from __future__ import print_function
 
 """Generate comparison data for two glyph image files.
 
@@ -31,11 +29,8 @@ from os import path
 
 from fontTools import ttLib
 
-from nototools import font_data
-from nototools import tool_utils
-
-from nototools.glyph_image import glyph_image_pair
-from nototools.glyph_image import glyph_image
+from nototools import font_data, tool_utils
+from nototools.glyph_image import glyph_image, glyph_image_pair
 
 
 def select_named_pairs(pair_data):
@@ -49,7 +44,7 @@ def select_named_pairs(pair_data):
     named_pairs = []
     if pair_data.cp_pairs is not None:
         for b, t, cp in pair_data.cp_pairs:
-            name = "%s%04X" % ("uni" if cp < 0x10000 else "u", cp)
+            name = "{}{:04X}".format("uni" if cp < 0x10000 else "u", cp)
             named_pairs.append((name, b, t))
     if pair_data.pri_pairs is not None:
         for b, t, _ in pair_data.pri_pairs:
@@ -124,7 +119,7 @@ def write_compare_data(gic_data, fd):
     def write_font_data(label, fdata):
         print("> %s: [" % label, file=fd)
         for k in GlyphImageFontData._fields:
-            print("> %s: %s" % (k, getattr(fdata, k)), file=fd)
+            print(f"> {k}: {getattr(fdata, k)}", file=fd)
         print("]", file=fd)
 
     def write_glyph_data(label, gdata):
@@ -144,7 +139,7 @@ def write_compare_data(gic_data, fd):
         for name, base, target, similarity in pdata.pair_data:
             base_str = "%d" % base if base >= 0 else ""
             target_str = "%d" % target if target >= 0 else ""
-            print("%s;%s;%s;%s" % (name, base_str, target_str, similarity), file=fd)
+            print(f"{name};{base_str};{target_str};{similarity}", file=fd)
 
     time = datetime.now()
     print("# %s" % time.strftime("%Y-%m-%d %H:%M:%S"), file=fd)
@@ -161,7 +156,7 @@ def read_compare_data(filepath):
         line = next(it)
         m = re.match(regex, line)
         if not m:
-            raise Exception('regex "%s" failed to match "%s"' % (regex, line))
+            raise Exception(f'regex "{regex}" failed to match "{line}"')
         return m
 
     def read_fdata(label, it):
@@ -214,7 +209,7 @@ def read_compare_data(filepath):
 
         return GlyphImagePairData(max_frame, pair_data)
 
-    with open(filepath, "r") as f:
+    with open(filepath) as f:
         it = glyph_image.LineStripper(f)
         base_fdata = read_fdata("base_fdata", it)
         target_fdata = read_fdata("target_fdata", it)

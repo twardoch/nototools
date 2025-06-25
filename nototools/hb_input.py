@@ -13,13 +13,11 @@
 # limitations under the License.
 
 
-from __future__ import division, print_function
-
 from nototools import summary
 from nototools.py23 import unichr
 
 
-class HbInputGenerator(object):
+class HbInputGenerator:
     """Provides functions to generate harbuzz input.
 
     The input is returned as a list of strings, suitable for passing into

@@ -12,9 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 """Utilities for rle-style compression on glyph image data."""
 
@@ -239,7 +236,7 @@ def _test_b64():
     for i in range(len(test_data)):
         temp = test_data[i:]
         enc = base64_encode(temp)
-        print("%s: %s" % (" ".join("%02x" % v for v in temp), enc))
+        print("{}: {}".format(" ".join("%02x" % v for v in temp), enc))
         res = base64_decode(enc)
         print(" --> %s" % (" ".join("%02x" % v for v in res)))
 
@@ -303,7 +300,7 @@ def default_compress(input_file, output_file, comp):
     assert input_file is not None
     base, ext = path.splitext(path.basename(input_file))
 
-    print('base "%s" ext "%s"' % (base, ext))
+    print(f'base "{base}" ext "{ext}"')
     if comp is None:
         if ext == ".txt":
             comp = True

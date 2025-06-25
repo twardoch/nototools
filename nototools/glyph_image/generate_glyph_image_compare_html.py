@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-from __future__ import print_function
 
 """Generate html that lets you browse the results from glyph_image_compare.
 
@@ -56,7 +54,6 @@ from os import path
 from string import Template
 
 from nototools import tool_utils
-
 from nototools.glyph_image import glyph_image_compare
 
 _TEMPLATE = """<!DOCTYPE html>
@@ -145,6 +142,7 @@ def generate_font_table(compare_data):
 
 def generate_image_data(compare_data):
     import json
+
     from nototools import unicode_data
 
     bdata = compare_data.base_gdata
